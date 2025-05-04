@@ -90,10 +90,10 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
   const hodComments = transcript.hodComments || getHodComments(passLevel);
 
   return (
-    <div className={`bg-white rounded-3xl overflow-hidden shadow-lg max-w-4xl mx-auto transition-all ${isPrinting ? "animate-print-pop" : ""} print:shadow-none`}>
-      <div className="p-2 rounded-[24px] bg-lvtc-navy text-white relative overflow-hidden">
-        {/* Contact Info Header - Further reduced size */}
-        <div className="flex justify-between text-xs text-right">
+    <div className={`bg-white rounded-3xl overflow-hidden shadow-lg mx-auto transition-all ${isPrinting ? "animate-print-pop" : ""} print:shadow-none print:w-full print:max-w-none`}>
+      <div className="p-3 rounded-t-3xl bg-lvtc-navy text-white relative overflow-hidden">
+        {/* Contact Info Header */}
+        <div className="flex justify-between text-xs">
           <div className="flex items-center">
             <div className="rounded-full bg-white p-0.5 mr-1">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-black" viewBox="0 0 20 20" fill="currentColor">
@@ -113,53 +113,53 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           </div>
         </div>
 
-        {/* School Logo and Name - Center aligned and more compact */}
-        <div className="flex items-center justify-center">
+        {/* School Logo and Name - Center aligned */}
+        <div className="flex items-center justify-center py-2">
           <img 
             src={logo} 
             alt="Lodwar VTC Logo" 
-            className="w-14 h-14 object-contain mr-2" 
+            className="w-16 h-16 object-contain mr-3" 
           />
           <div className="text-white text-center">
-            <h1 className="text-lg font-bold mb-0 uppercase tracking-wide">
+            <h1 className="text-xl font-bold mb-0 uppercase tracking-wide">
               Lodwar Vocational Training
             </h1>
-            <h1 className="text-lg font-bold uppercase tracking-wide">
+            <h1 className="text-xl font-bold uppercase tracking-wide">
               Centre
             </h1>
           </div>
         </div>
 
         {/* Transcript Title */}
-        <div className="text-center bg-lvtc-navy py-0.5">
+        <div className="text-center bg-lvtc-navy py-1">
           <h2 className="text-lg font-bold uppercase">TRANSCRIPT</h2>
         </div>
       </div>
 
-      <div className="p-3 bg-white">
-        {/* Student Information - Inline and compact layout */}
-        <div className="flex flex-wrap text-xs mb-2 border-b pb-1 border-gray-300">
-          <div className="w-1/2 flex items-center">
+      <div className="p-4 bg-white">
+        {/* Student Information - Inline layout */}
+        <div className="flex flex-wrap mb-3 border-b pb-2 border-gray-300">
+          <div className="w-1/2 flex items-center mb-1">
             <span className="font-bold text-lvtc-navy mr-1">Name:</span>
             <span>{transcript.student.name}</span>
           </div>
-          <div className="w-1/2 flex items-center">
+          <div className="w-1/2 flex items-center mb-1">
             <span className="font-bold text-lvtc-navy mr-1">Adm No:</span>
             <span>{transcript.student.admissionNumber}</span>
           </div>
-          <div className="w-1/2 flex items-center mt-0.5">
+          <div className="w-1/2 flex items-center">
             <span className="font-bold text-lvtc-navy mr-1">Course:</span>
             <span>{transcript.student.course}</span>
           </div>
-          <div className="w-1/2 flex items-center mt-0.5">
+          <div className="w-1/2 flex items-center">
             <span className="font-bold text-lvtc-navy mr-1">School Year:</span>
             <span>{transcript.student.schoolYear}</span>
           </div>
         </div>
 
         {/* Grades Table with minimized grading scale */}
-        <div className="flex mb-3">
-          <table className="w-full border-collapse text-xs">
+        <div className="mb-4">
+          <table className="w-full border-collapse">
             <thead>
               <tr className="bg-lvtc-navy text-white">
                 <th className="p-1 text-left">COURSE UNIT</th>
@@ -173,32 +173,32 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
               {transcript.courseUnits.map((unit, index) => (
                 <tr 
                   key={unit.id} 
-                  className={index % 2 === 0 ? "bg-lvtc-yellow" : "bg-white"}
+                  className={index % 2 === 0 ? "bg-lvtc-yellow/50" : "bg-white"}
                 >
-                  <td className="p-1 font-semibold">{unit.name}</td>
-                  <td className="p-1 text-center">{unit.cat !== null ? unit.cat : "-"}</td>
-                  <td className="p-1 text-center">{unit.exam !== null ? unit.exam : "-"}</td>
-                  <td className="p-1 text-center">{unit.total !== null ? unit.total : "-"}</td>
-                  <td className="p-1 text-center">{unit.grade || "-"}</td>
+                  <td className="p-1.5 font-semibold">{unit.name}</td>
+                  <td className="p-1.5 text-center">{unit.cat !== null ? unit.cat : "-"}</td>
+                  <td className="p-1.5 text-center">{unit.exam !== null ? unit.exam : "-"}</td>
+                  <td className="p-1.5 text-center">{unit.total !== null ? unit.total : "-"}</td>
+                  <td className="p-1.5 text-center">{unit.grade || "-"}</td>
                 </tr>
               ))}
               <tr className="bg-lvtc-yellow font-bold">
-                <td className="p-1">Total</td>
-                <td className="p-1 text-center">-</td>
-                <td className="p-1 text-center">-</td>
-                <td className="p-1 text-center">{stats.total}</td>
-                <td className="p-1 text-center">-</td>
+                <td className="p-1.5">Total</td>
+                <td className="p-1.5 text-center">-</td>
+                <td className="p-1.5 text-center">-</td>
+                <td className="p-1.5 text-center">{stats.total}</td>
+                <td className="p-1.5 text-center">-</td>
               </tr>
             </tbody>
           </table>
         </div>
 
-        {/* Grading Scales - Final grade and passing levels in a single line */}
-        <div className="flex items-center justify-between bg-gray-100 p-2 rounded mb-3 text-xs">
+        {/* Final Grade and Grading Scale in one line */}
+        <div className="flex items-center bg-gray-100 p-2 rounded mb-4">
           <div className="font-bold text-lvtc-navy">FINAL GRADE: {passLevel}</div>
-          <div className="flex space-x-3">
+          <div className="flex-1 ml-4 flex space-x-4">
             {passScales.map((scale, index) => (
-              <div key={index} className="flex gap-1">
+              <div key={index} className="flex items-center gap-1 text-sm">
                 <span className="font-bold">{scale.level}:</span>
                 <span>{scale.range}</span>
               </div>
@@ -207,36 +207,36 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         </div>
 
         {/* Comments and Info Section - Improved layout */}
-        <div className="grid grid-cols-3 gap-4 text-xs">
+        <div className="grid grid-cols-3 gap-4">
           {/* Manager Comments */}
-          <div className="bg-lvtc-yellow p-3 rounded">
-            <div className="uppercase font-bold mb-1 text-center">Manager Comments:</div>
-            <div className="min-h-[60px]">{managerComments}</div>
-            <div className="mt-2 font-bold text-center">
+          <div className="bg-lvtc-yellow/60 p-3 rounded">
+            <div className="uppercase font-bold mb-2 text-center">Manager Comments:</div>
+            <div className="min-h-[80px]">{managerComments}</div>
+            <div className="mt-3 font-bold text-center">
               MR. ABRAHAM CHEGEM<br />
               MANAGER LVTC
             </div>
           </div>
 
           {/* Information Column - With Fee Balance and Dates */}
-          <div className="bg-lvtc-yellow p-3 rounded flex flex-col justify-between">
-            <div className="space-y-2.5">
+          <div className="bg-lvtc-yellow/60 p-3 rounded flex flex-col justify-between">
+            <div className="space-y-3">
               <div>
-                <div className="uppercase font-bold mb-0.5">Closing Day:</div>
+                <div className="uppercase font-bold mb-1">Closing Day:</div>
                 <div>{transcript.closingDay}</div>
               </div>
               <div>
-                <div className="uppercase font-bold mb-0.5">Opening Day:</div>
+                <div className="uppercase font-bold mb-1">Opening Day:</div>
                 <div>{transcript.openingDay}</div>
               </div>
               <div>
-                <div className="uppercase font-bold mb-0.5">Fee Balance:</div>
+                <div className="uppercase font-bold mb-1">Fee Balance:</div>
                 <div className="font-bold">{transcript.feeBalance}</div>
               </div>
             </div>
             
             {/* Grade scales at the bottom */}
-            <div className="grid grid-cols-2 gap-1 mt-2 text-[9px] border-t pt-1 border-gray-400">
+            <div className="grid grid-cols-2 gap-1 mt-3 text-[10px] border-t pt-1 border-gray-400">
               {gradeScales.map((scale, index) => (
                 <div key={index} className="flex gap-1">
                   <span className="font-bold">{scale.grade}:</span>
@@ -247,10 +247,10 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           </div>
 
           {/* HOD Comments */}
-          <div className="bg-lvtc-yellow p-3 rounded">
-            <div className="uppercase font-bold mb-1 text-center">H.O.D Comments:</div>
-            <div className="min-h-[60px]">{hodComments}</div>
-            <div className="mt-2 font-bold text-center">
+          <div className="bg-lvtc-yellow/60 p-3 rounded">
+            <div className="uppercase font-bold mb-2 text-center">H.O.D Comments:</div>
+            <div className="min-h-[80px]">{hodComments}</div>
+            <div className="mt-3 font-bold text-center">
               {transcript.hodName || "MR. GEOFREY NALIMA"}<br />
               H.O.D ELECTRICAL
             </div>
@@ -262,8 +262,17 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         {`
           @media print {
             @page {
-              size: A4;
-              margin: 1cm;
+              size: A4 portrait;
+              margin: 0.5cm;
+            }
+            body {
+              margin: 0;
+              padding: 0;
+            }
+            .print-container {
+              width: 100%;
+              height: 100%;
+              page-break-after: always;
             }
           }
         `}

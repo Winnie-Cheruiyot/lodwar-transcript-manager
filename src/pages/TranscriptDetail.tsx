@@ -6,6 +6,7 @@ import TranscriptView from "@/components/TranscriptView";
 import TranscriptEditor from "@/components/TranscriptEditor";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
+import { Printer, Download } from "lucide-react";
 
 const TranscriptDetail = () => {
   const { id } = useParams<{ id: string }>();
@@ -76,7 +77,8 @@ const TranscriptDetail = () => {
               >
                 Edit Transcript
               </Button>
-              <Button onClick={handlePrint}>
+              <Button onClick={handlePrint} className="flex items-center gap-1">
+                <Printer size={18} />
                 Print Transcript
               </Button>
             </>
@@ -84,15 +86,17 @@ const TranscriptDetail = () => {
         </div>
       </div>
 
-      {isEditing ? (
-        <TranscriptEditor
-          transcript={transcript}
-          onSave={() => setIsEditing(false)}
-          onCancel={() => setIsEditing(false)}
-        />
-      ) : (
-        <TranscriptView transcript={transcript} isPrinting={isPrinting} />
-      )}
+      <div className="print-container">
+        {isEditing ? (
+          <TranscriptEditor
+            transcript={transcript}
+            onSave={() => setIsEditing(false)}
+            onCancel={() => setIsEditing(false)}
+          />
+        ) : (
+          <TranscriptView transcript={transcript} isPrinting={isPrinting} />
+        )}
+      </div>
     </div>
   );
 };
