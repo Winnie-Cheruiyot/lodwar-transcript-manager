@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Transcript, gradeScales, passScales } from "@/types/transcript";
 import logo from "/public/lovable-uploads/2a540926-4284-411c-aa4b-7863224682f2.png";
@@ -157,7 +158,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         </div>
 
         {/* Grades Table with minimized grading scale */}
-        <div className="flex mb-2">
+        <div className="flex mb-3">
           <table className="w-full border-collapse text-xs">
             <thead>
               <tr className="bg-lvtc-navy text-white">
@@ -192,24 +193,25 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           </table>
         </div>
 
-        {/* Grading Scales - Simplified and inline */}
-        <div className="flex justify-between text-xs mb-2 bg-gray-100 p-1 rounded">
+        {/* Grading Scales - Final grade and passing levels in a single line */}
+        <div className="flex items-center justify-between bg-gray-100 p-2 rounded mb-3 text-xs">
           <div className="font-bold text-lvtc-navy">FINAL GRADE: {passLevel}</div>
-          <div className="flex space-x-2">
-            {gradeScales.map((scale, index) => (
-              <div key={index} className="text-center">
-                <span className="font-bold mr-1">{scale.grade}:</span>
+          <div className="flex space-x-3">
+            {passScales.map((scale, index) => (
+              <div key={index} className="flex gap-1">
+                <span className="font-bold">{scale.level}:</span>
                 <span>{scale.range}</span>
               </div>
             ))}
           </div>
         </div>
 
-        {/* Comments and Feedback Section - 3 columns */}
-        <div className="grid grid-cols-3 gap-2 text-xs">
-          <div className="bg-lvtc-yellow p-2 rounded">
+        {/* Comments and Info Section - Improved layout */}
+        <div className="grid grid-cols-3 gap-4 text-xs">
+          {/* Manager Comments */}
+          <div className="bg-lvtc-yellow p-3 rounded">
             <div className="uppercase font-bold mb-1 text-center">Manager Comments:</div>
-            <div className="min-h-[50px]">{managerComments}</div>
+            <div className="min-h-[60px]">{managerComments}</div>
             <div className="mt-2 font-bold text-center">
               MR. ABRAHAM CHEGEM<br />
               MANAGER LVTC
@@ -217,32 +219,37 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           </div>
 
           {/* Information Column - With Fee Balance and Dates */}
-          <div className="bg-lvtc-yellow p-2 rounded text-center">
-            <div>
-              <div className="uppercase font-bold mb-0.5">Closing Day:</div>
-              <div className="mb-1">{transcript.closingDay}</div>
+          <div className="bg-lvtc-yellow p-3 rounded flex flex-col justify-between">
+            <div className="space-y-2.5">
+              <div>
+                <div className="uppercase font-bold mb-0.5">Closing Day:</div>
+                <div>{transcript.closingDay}</div>
+              </div>
+              <div>
+                <div className="uppercase font-bold mb-0.5">Opening Day:</div>
+                <div>{transcript.openingDay}</div>
+              </div>
+              <div>
+                <div className="uppercase font-bold mb-0.5">Fee Balance:</div>
+                <div className="font-bold">{transcript.feeBalance}</div>
+              </div>
             </div>
-            <div>
-              <div className="uppercase font-bold mb-0.5">Opening Day:</div>
-              <div className="mb-1">{transcript.openingDay}</div>
-            </div>
-            <div>
-              <div className="uppercase font-bold mb-0.5">Fee Balance:</div>
-              <div className="mb-1 font-bold">{transcript.feeBalance}</div>
-            </div>
-            {/* Pass Levels - Condensed */}
-            <div className="mt-1 grid grid-cols-2 gap-1 text-[9px]">
-              {passScales.map((scale, index) => (
-                <div key={index}>
-                  <span className="font-bold">{scale.level}</span>: {scale.range}
+            
+            {/* Grade scales at the bottom */}
+            <div className="grid grid-cols-2 gap-1 mt-2 text-[9px] border-t pt-1 border-gray-400">
+              {gradeScales.map((scale, index) => (
+                <div key={index} className="flex gap-1">
+                  <span className="font-bold">{scale.grade}:</span>
+                  <span>{scale.range}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          <div className="bg-lvtc-yellow p-2 rounded">
+          {/* HOD Comments */}
+          <div className="bg-lvtc-yellow p-3 rounded">
             <div className="uppercase font-bold mb-1 text-center">H.O.D Comments:</div>
-            <div className="min-h-[50px]">{hodComments}</div>
+            <div className="min-h-[60px]">{hodComments}</div>
             <div className="mt-2 font-bold text-center">
               {transcript.hodName || "MR. GEOFREY NALIMA"}<br />
               H.O.D ELECTRICAL
