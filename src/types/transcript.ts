@@ -24,6 +24,7 @@ export interface Transcript {
   remarks: string;
   managerComments: string;
   hodComments: string;
+  hodName: string;
   closingDay: string;
   openingDay: string;
   feeBalance: string;
