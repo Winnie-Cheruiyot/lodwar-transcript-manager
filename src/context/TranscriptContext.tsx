@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Transcript, Student, CourseUnit, defaultCourseUnits } from "@/types/transcript";
@@ -96,6 +95,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
       remarks: "",
       managerComments: "",
       hodComments: "",
+      hodName: "",
       closingDay: "",
       openingDay: "",
       feeBalance: "",
