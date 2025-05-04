@@ -55,23 +55,23 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </footer>
 
-      <style>
-        {`
-        @media print {
-          @page {
-            size: A4;
-            margin: 0.5cm;
+      <style dangerouslySetInnerHTML={{
+        __html: `
+          @media print {
+            @page {
+              size: A4;
+              margin: 0.5cm;
+            }
+            body {
+              padding: 0;
+              margin: 0;
+            }
+            .print-hidden {
+              display: none;
+            }
           }
-          body {
-            padding: 0;
-            margin: 0;
-          }
-          .print-hidden {
-            display: none;
-          }
-        }
-        `}
-      </style>
+        `
+      }} />
     </div>
   );
 };
