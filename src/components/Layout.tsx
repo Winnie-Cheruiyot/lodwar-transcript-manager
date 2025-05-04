@@ -55,7 +55,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         </div>
       </footer>
 
-      <style jsx global>{`
+      <style>
+        {`
         @media print {
           @page {
             size: A4;
@@ -69,7 +70,8 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             display: none;
           }
         }
-      `}</style>
+        `}
+      </style>
     </div>
   );
 };
