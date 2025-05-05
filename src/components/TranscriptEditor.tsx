@@ -26,7 +26,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { Calendar, Edit } from "lucide-react";
+import { Calendar, Edit, Plus } from "lucide-react";
 import { toast } from "sonner";
 
 // Define default course units available for selection
@@ -65,6 +65,8 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
     ...transcript,
   });
   const [newCourseUnit, setNewCourseUnit] = useState<string>("");
+  const [customCourseUnit, setCustomCourseUnit] = useState<string>("");
+  const [isCustomCourseUnit, setIsCustomCourseUnit] = useState(false);
 
   // Helper function to calculate grade based on total points
   const calculateGrade = (total: number | null): string | null => {
@@ -123,22 +125,31 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
     });
   };
 
-  // Add new course unit from dropdown
+  // Toggle between custom and dropdown course unit selection
+  const toggleCustomCourseUnit = () => {
+    setIsCustomCourseUnit(!isCustomCourseUnit);
+    setNewCourseUnit("");
+    setCustomCourseUnit("");
+  };
+
+  // Add new course unit from dropdown or custom input
   const handleAddCourseUnit = () => {
-    if (!newCourseUnit) {
-      toast.error("Please select a course unit");
+    const courseUnitName = isCustomCourseUnit ? customCourseUnit : newCourseUnit;
+    
+    if (!courseUnitName) {
+      toast.error("Please enter a course unit name");
       return;
     }
 
     // Check if course unit already exists
-    if (editedTranscript.courseUnits.some(unit => unit.name === newCourseUnit)) {
+    if (editedTranscript.courseUnits.some(unit => unit.name === courseUnitName)) {
       toast.error("This course unit already exists");
       return;
     }
 
     const newUnit: CourseUnit = {
       id: Date.now().toString(),
-      name: newCourseUnit,
+      name: courseUnitName,
       cat: null,
       exam: null,
       total: null,
@@ -151,6 +162,7 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
     });
 
     setNewCourseUnit("");
+    setCustomCourseUnit("");
   };
 
   // Delete course unit
@@ -256,21 +268,46 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
               <CardTitle>Course Units and Grades</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="mb-4 flex items-end gap-2">
-                <div className="flex-1">
-                  <Label htmlFor="newCourseUnit">Add Course Unit</Label>
-                  <Select value={newCourseUnit} onValueChange={setNewCourseUnit}>
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select course unit" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {availableCourseUnits.map((unit) => (
-                        <SelectItem key={unit} value={unit}>{unit}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              <div className="mb-4">
+                <div className="flex items-center gap-2 mb-2">
+                  <Label>Add Course Unit</Label>
+                  <Button 
+                    type="button" 
+                    variant="outline" 
+                    size="sm" 
+                    onClick={toggleCustomCourseUnit}
+                  >
+                    {isCustomCourseUnit ? "Select from list" : "Add custom unit"}
+                  </Button>
                 </div>
-                <Button type="button" onClick={handleAddCourseUnit}>Add</Button>
+                
+                <div className="flex items-end gap-2">
+                  {isCustomCourseUnit ? (
+                    <div className="flex-1">
+                      <Input
+                        placeholder="Enter custom course unit"
+                        value={customCourseUnit}
+                        onChange={(e) => setCustomCourseUnit(e.target.value)}
+                      />
+                    </div>
+                  ) : (
+                    <div className="flex-1">
+                      <Select value={newCourseUnit} onValueChange={setNewCourseUnit}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Select course unit" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {availableCourseUnits.map((unit) => (
+                            <SelectItem key={unit} value={unit}>{unit}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  )}
+                  <Button type="button" onClick={handleAddCourseUnit}>
+                    <Plus className="h-4 w-4 mr-1" /> Add
+                  </Button>
+                </div>
               </div>
               
               <div className="overflow-x-auto">
@@ -288,7 +325,13 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
                   <tbody>
                     {editedTranscript.courseUnits.map((unit, index) => (
                       <tr key={unit.id} className={index % 2 === 0 ? "bg-lvtc-yellow" : "bg-white"}>
-                        <td className="p-2 font-semibold">{unit.name}</td>
+                        <td className="p-2 font-semibold">
+                          <Input
+                            value={unit.name}
+                            onChange={(e) => handleCourseUnitChange(unit.id, "name", e.target.value)}
+                            className="h-8"
+                          />
+                        </td>
                         <td className="p-2 text-center">
                           <Input
                             type="number"
@@ -416,12 +459,12 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
               </div>
               
               <div className="space-y-2">
-                <Label htmlFor="hodName">H.O.D Name</Label>
+                <Label htmlFor="hodName">H.O.D Name & Department</Label>
                 <Input
                   id="hodName"
                   value={editedTranscript.hodName}
                   onChange={(e) => handleTranscriptChange("hodName", e.target.value)}
-                  placeholder="Enter H.O.D name"
+                  placeholder="e.g. John Doe, ELECTRICAL"
                 />
               </div>
 
