@@ -163,11 +163,45 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
         if (existingTranscript) {
           // Update course units based on Excel data
           const updatedCourseUnits = existingTranscript.courseUnits.map(unit => {
-            const unitName = unit.name;
-            // Look for matching column names in Excel data for grades
-            const catValue = row[`${unitName}_CAT`] || row[`${unitName.toLowerCase()}_cat`] || row[`${unitName} CAT`] || unit.cat;
-            const examValue = row[`${unitName}_EXAM`] || row[`${unitName.toLowerCase()}_exam`] || row[`${unitName} EXAM`] || unit.exam;
-            const totalValue = row[`${unitName}_TOTAL`] || row[`${unitName.toLowerCase()}_total`] || row[`${unitName} TOTAL`] || unit.total;
+            const unitName = unit.name.toUpperCase().trim();
+            
+            // Look for matching column names in Excel data for grades - more comprehensive matching
+            const possibleCatKeys = [
+              `${unitName}_CAT`, 
+              `${unitName.toLowerCase()}_cat`, 
+              `${unitName} CAT`,
+              `${unit.name}_CAT`, 
+              `${unit.name.toLowerCase()}_cat`, 
+              `${unit.name} CAT`
+            ];
+            
+            const possibleExamKeys = [
+              `${unitName}_EXAM`, 
+              `${unitName.toLowerCase()}_exam`, 
+              `${unitName} EXAM`,
+              `${unit.name}_EXAM`, 
+              `${unit.name.toLowerCase()}_exam`, 
+              `${unit.name} EXAM`
+            ];
+            
+            const possibleTotalKeys = [
+              `${unitName}_TOTAL`, 
+              `${unitName.toLowerCase()}_total`, 
+              `${unitName} TOTAL`,
+              `${unit.name}_TOTAL`, 
+              `${unit.name.toLowerCase()}_total`, 
+              `${unit.name} TOTAL`
+            ];
+            
+            // Find the first matching key in the row data
+            const catKey = possibleCatKeys.find(key => row[key] !== undefined);
+            const examKey = possibleExamKeys.find(key => row[key] !== undefined);
+            const totalKey = possibleTotalKeys.find(key => row[key] !== undefined);
+            
+            // Get values if keys were found
+            const catValue = catKey ? row[catKey] : unit.cat;
+            const examValue = examKey ? row[examKey] : unit.exam;
+            const totalValue = totalKey ? row[totalKey] : unit.total;
             
             // Calculate grade based on total if available
             let grade = unit.grade;
@@ -180,6 +214,11 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
                 else if (total >= 40) grade = "D";
                 else grade = "E";
               }
+            }
+
+            // Add extra debugging to help diagnose import issues
+            if (catKey || examKey || totalKey) {
+              console.log(`Found matches for ${unit.name}: CAT=${catKey}, EXAM=${examKey}, TOTAL=${totalKey}`);
             }
 
             return {
@@ -198,6 +237,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
             remarks: row.remarks || existingTranscript.remarks,
             managerComments: row.managerComments || existingTranscript.managerComments,
             hodComments: row.hodComments || existingTranscript.hodComments,
+            hodName: row.hodName || existingTranscript.hodName,
             closingDay: row.closingDay || existingTranscript.closingDay,
             openingDay: row.openingDay || existingTranscript.openingDay,
             feeBalance: row.feeBalance || existingTranscript.feeBalance,
@@ -235,11 +275,45 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
         const newTranscript = getStudentTranscript(newStudent.id);
         if (newTranscript) {
           const updatedCourseUnits = newTranscript.courseUnits.map(unit => {
-            const unitName = unit.name;
-            // Look for matching column names in Excel data for grades
-            const catValue = row[`${unitName}_CAT`] || row[`${unitName.toLowerCase()}_cat`] || row[`${unitName} CAT`];
-            const examValue = row[`${unitName}_EXAM`] || row[`${unitName.toLowerCase()}_exam`] || row[`${unitName} EXAM`];
-            const totalValue = row[`${unitName}_TOTAL`] || row[`${unitName.toLowerCase()}_total`] || row[`${unitName} TOTAL`];
+            const unitName = unit.name.toUpperCase().trim();
+            
+            // Look for matching column names in Excel data for grades - more comprehensive matching
+            const possibleCatKeys = [
+              `${unitName}_CAT`, 
+              `${unitName.toLowerCase()}_cat`, 
+              `${unitName} CAT`,
+              `${unit.name}_CAT`, 
+              `${unit.name.toLowerCase()}_cat`, 
+              `${unit.name} CAT`
+            ];
+            
+            const possibleExamKeys = [
+              `${unitName}_EXAM`, 
+              `${unitName.toLowerCase()}_exam`, 
+              `${unitName} EXAM`,
+              `${unit.name}_EXAM`, 
+              `${unit.name.toLowerCase()}_exam`, 
+              `${unit.name} EXAM`
+            ];
+            
+            const possibleTotalKeys = [
+              `${unitName}_TOTAL`, 
+              `${unitName.toLowerCase()}_total`, 
+              `${unitName} TOTAL`,
+              `${unit.name}_TOTAL`, 
+              `${unit.name.toLowerCase()}_total`, 
+              `${unit.name} TOTAL`
+            ];
+            
+            // Find the first matching key in the row data
+            const catKey = possibleCatKeys.find(key => row[key] !== undefined);
+            const examKey = possibleExamKeys.find(key => row[key] !== undefined);
+            const totalKey = possibleTotalKeys.find(key => row[key] !== undefined);
+            
+            // Get values if keys were found
+            const catValue = catKey ? row[catKey] : null;
+            const examValue = examKey ? row[examKey] : null;
+            const totalValue = totalKey ? row[totalKey] : null;
             
             // Calculate grade based on total if available
             let grade = null;
@@ -253,7 +327,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
                 else grade = "E";
               }
             }
-
+            
             return {
               ...unit,
               cat: catValue !== undefined ? Number(catValue) : null,
@@ -269,6 +343,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
             remarks: row.remarks || "",
             managerComments: row.managerComments || "",
             hodComments: row.hodComments || "",
+            hodName: row.hodName || "",
             closingDay: row.closingDay || "",
             openingDay: row.openingDay || "",
             feeBalance: row.feeBalance || "",

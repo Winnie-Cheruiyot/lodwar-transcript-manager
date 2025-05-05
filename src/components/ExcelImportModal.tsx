@@ -176,13 +176,16 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
                     <li><strong>course</strong> - Course name</li>
                   </ul>
                   
-                  <p className="font-medium mb-1">Optional columns:</p>
+                  <p className="font-medium mb-1">Grade columns structure:</p>
+                  <ul className="list-disc pl-5 space-y-1 mb-2">
+                    <li><strong>[SUBJECT_NAME]_CAT</strong> - CAT marks (e.g., MATHEMATICS_CAT)</li>
+                    <li><strong>[SUBJECT_NAME]_EXAM</strong> - Exam marks (e.g., MATHEMATICS_EXAM)</li>
+                    <li><strong>[SUBJECT_NAME]_TOTAL</strong> - Total marks (e.g., MATHEMATICS_TOTAL)</li>
+                  </ul>
+                  
+                  <p className="font-medium mb-1">Other optional columns:</p>
                   <ul className="list-disc pl-5 space-y-1 mb-2">
                     <li><strong>schoolYear</strong> - School year</li>
-                    <li><strong>[SUBJECT_NAME]_CAT</strong> - CAT marks for each subject</li>
-                    <li><strong>[SUBJECT_NAME]_EXAM</strong> - Exam marks for each subject</li>
-                    <li><strong>[SUBJECT_NAME]_TOTAL</strong> - Total marks for each subject</li>
-                    <li><strong>remarks</strong> - General remarks</li>
                     <li><strong>managerComments</strong> - Comments from manager</li>
                     <li><strong>hodComments</strong> - Comments from HOD</li>
                     <li><strong>hodName</strong> - Name of the HOD</li>
@@ -191,8 +194,9 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
                     <li><strong>feeBalance</strong> - Outstanding fee balance</li>
                   </ul>
                   
-                  <p className="font-medium">Note:</p>
-                  <p>Download the template for a ready-to-use Excel format.</p>
+                  <p className="text-blue-500 font-medium mt-2">
+                    Important: Column names must match exactly as shown above. Download the template for a correct format example.
+                  </p>
                 </div>
               </AccordionContent>
             </AccordionItem>
