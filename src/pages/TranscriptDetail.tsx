@@ -57,7 +57,7 @@ const TranscriptDetail = () => {
       "Student Name": string;
       "Admission Number": string;
       "Course": string;
-      "School Year": string;
+      "Term & Year": string;
     };
 
     type EmptyRow = Record<string, never>;
@@ -91,7 +91,7 @@ const TranscriptDetail = () => {
       "Student Name": student.name,
       "Admission Number": student.admissionNumber,
       "Course": student.course,
-      "School Year": student.schoolYear
+      "Term & Year": student.schoolYear
     });
 
     // Empty row for spacing
@@ -136,10 +136,17 @@ const TranscriptDetail = () => {
     data.push({} as EmptyRow);
     data.push({ "Subject": "Manager Comments", "Comment": transcript.managerComments } as CommentRow);
     data.push({ "Subject": "HOD Comments", "Comment": transcript.hodComments } as CommentRow);
+    if (transcript.hodName) {
+      data.push({ "Subject": "HOD Name", "Comment": transcript.hodName } as CommentRow);
+    }
     data.push({} as EmptyRow);
     data.push({ "Subject": "Closing Day", "Comment": transcript.closingDay } as CommentRow);
     data.push({ "Subject": "Opening Day", "Comment": transcript.openingDay } as CommentRow);
     data.push({ "Subject": "Fee Balance", "Comment": transcript.feeBalance } as CommentRow);
+    
+    // Add footer with copyright
+    data.push({} as EmptyRow);
+    data.push({ "Subject": "© Examination department@2025 LVTC", "Comment": "" } as CommentRow);
 
     // Create workbook
     const worksheet = XLSX.utils.json_to_sheet(data);
@@ -210,6 +217,10 @@ const TranscriptDetail = () => {
         ) : (
           <TranscriptView transcript={transcript} isPrinting={isPrinting} />
         )}
+      </div>
+      
+      <div className="mt-8 text-center text-sm text-gray-500 print:mt-4">
+        © Examination department@2025 LVTC
       </div>
     </div>
   );
