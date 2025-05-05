@@ -74,9 +74,9 @@ const TranscriptDetail = () => {
     transcript.courseUnits.forEach(unit => {
       data.push({
         "Subject": unit.name,
-        "CAT": unit.cat !== null ? unit.cat : "",
-        "EXAM": unit.exam !== null ? unit.exam : "",
-        "TOTAL": unit.total !== null ? unit.total : "",
+        "CAT": unit.cat !== null ? String(unit.cat) : "",
+        "EXAM": unit.exam !== null ? String(unit.exam) : "",
+        "TOTAL": unit.total !== null ? String(unit.total) : "",
         "GRADE": unit.grade || ""
       });
     });
@@ -86,17 +86,17 @@ const TranscriptDetail = () => {
       (sum, unit) => sum + (unit.total || 0), 0
     );
     
-    data.push({}, { "Subject": "TOTAL", "TOTAL": totalPoints });
+    data.push({}, { "Subject": "TOTAL", "TOTAL": String(totalPoints) });
 
     // Add additional information
     data.push(
       {},
-      { "Comments": "Manager Comments", "Value": transcript.managerComments },
-      { "Comments": "HOD Comments", "Value": transcript.hodComments },
+      { "Subject": "Manager Comments", "Value": transcript.managerComments },
+      { "Subject": "HOD Comments", "Value": transcript.hodComments },
       {},
-      { "Details": "Closing Day", "Value": transcript.closingDay },
-      { "Details": "Opening Day", "Value": transcript.openingDay },
-      { "Details": "Fee Balance", "Value": transcript.feeBalance }
+      { "Subject": "Closing Day", "Value": transcript.closingDay },
+      { "Subject": "Opening Day", "Value": transcript.openingDay },
+      { "Subject": "Fee Balance", "Value": transcript.feeBalance }
     );
 
     // Create workbook
