@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Transcript, gradeScales, passScales } from "@/types/transcript";
 import logo from "/public/lovable-uploads/2a540926-4284-411c-aa4b-7863224682f2.png";
@@ -253,8 +252,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
             <div className="uppercase font-bold mb-2 text-center">H.O.D Comments:</div>
             <div className="min-h-[85px] text-sm">{hodComments}</div>
             <div className="mt-3 font-bold text-center">
-              {transcript.hodName || "MR. GEOFREY NALIMA"}<br />
-              H.O.D ELECTRICAL
+              {transcript.hodName || "H.O.D"}
             </div>
           </div>
         </div>
