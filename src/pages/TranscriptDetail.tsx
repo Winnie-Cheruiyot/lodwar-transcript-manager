@@ -51,24 +51,60 @@ const TranscriptDetail = () => {
 
     // Create data for Excel
     const student = transcript.student;
-    const data = [
-      // Header row for student info
-      { 
-        "Student Name": student.name,
-        "Admission Number": student.admissionNumber,
-        "Course": student.course,
-        "School Year": student.schoolYear
-      },
-      {}, // Empty row for spacing
-      // Header for subjects
-      {
-        "Subject": "Subject",
-        "CAT": "CAT",
-        "EXAM": "EXAM",
-        "TOTAL": "TOTAL",
-        "GRADE": "GRADE"
-      }
-    ];
+    
+    // Define the different types of rows we'll add to the Excel file
+    type StudentInfoRow = {
+      "Student Name": string;
+      "Admission Number": string;
+      "Course": string;
+      "School Year": string;
+    };
+
+    type EmptyRow = Record<string, never>;
+
+    type SubjectRow = {
+      "Subject": string;
+      "CAT": string;
+      "EXAM": string;
+      "TOTAL": string;
+      "GRADE": string;
+    };
+
+    type TotalRow = {
+      "Subject": string;
+      "CAT"?: string;
+      "EXAM"?: string;
+      "TOTAL": string;
+      "GRADE"?: string;
+    };
+
+    type CommentRow = {
+      "Subject": string;
+      "Comment": string;
+    };
+
+    // Create an array to hold all our row types
+    const data: Array<StudentInfoRow | EmptyRow | SubjectRow | TotalRow | CommentRow> = [];
+
+    // Header row for student info
+    data.push({ 
+      "Student Name": student.name,
+      "Admission Number": student.admissionNumber,
+      "Course": student.course,
+      "School Year": student.schoolYear
+    });
+
+    // Empty row for spacing
+    data.push({} as EmptyRow);
+    
+    // Header for subjects
+    data.push({
+      "Subject": "Subject",
+      "CAT": "CAT",
+      "EXAM": "EXAM",
+      "TOTAL": "TOTAL",
+      "GRADE": "GRADE"
+    });
 
     // Add course units
     transcript.courseUnits.forEach(unit => {
@@ -86,18 +122,24 @@ const TranscriptDetail = () => {
       (sum, unit) => sum + (unit.total || 0), 0
     );
     
-    data.push({}, { "Subject": "TOTAL", "TOTAL": String(totalPoints) });
+    // Add empty row and total row
+    data.push({} as EmptyRow);
+    data.push({
+      "Subject": "TOTAL",
+      "CAT": "",
+      "EXAM": "",
+      "TOTAL": String(totalPoints),
+      "GRADE": ""
+    } as TotalRow);
 
-    // Add additional information
-    data.push(
-      {},
-      { "Subject": "Manager Comments", "Value": transcript.managerComments },
-      { "Subject": "HOD Comments", "Value": transcript.hodComments },
-      {},
-      { "Subject": "Closing Day", "Value": transcript.closingDay },
-      { "Subject": "Opening Day", "Value": transcript.openingDay },
-      { "Subject": "Fee Balance", "Value": transcript.feeBalance }
-    );
+    // Add additional information with comments
+    data.push({} as EmptyRow);
+    data.push({ "Subject": "Manager Comments", "Comment": transcript.managerComments } as CommentRow);
+    data.push({ "Subject": "HOD Comments", "Comment": transcript.hodComments } as CommentRow);
+    data.push({} as EmptyRow);
+    data.push({ "Subject": "Closing Day", "Comment": transcript.closingDay } as CommentRow);
+    data.push({ "Subject": "Opening Day", "Comment": transcript.openingDay } as CommentRow);
+    data.push({ "Subject": "Fee Balance", "Comment": transcript.feeBalance } as CommentRow);
 
     // Create workbook
     const worksheet = XLSX.utils.json_to_sheet(data);
