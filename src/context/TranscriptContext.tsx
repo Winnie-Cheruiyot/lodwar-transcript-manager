@@ -143,10 +143,27 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
   const processExcelData = (data: any[]) => {
     let studentsAdded = 0;
     let studentsUpdated = 0;
+    
+    console.log("Processing Excel data:", data);
+    
+    // Remove header rows if they exist (first row usually contains column names)
+    const dataRows = data.filter(row => {
+      return row.name && row.admissionNumber && row.course;
+    });
+    
+    console.log("Valid data rows:", dataRows);
+    
+    if (dataRows.length === 0) {
+      throw new Error("No valid data rows found in the Excel file");
+    }
 
-    data.forEach((row) => {
+    dataRows.forEach((row) => {
+      // Output raw row data for debugging
+      console.log("Processing row:", row);
+      
       // Check for required fields
       if (!row.name || !row.admissionNumber || !row.course) {
+        console.log("Skipping row due to missing required fields");
         return;
       }
       
@@ -161,105 +178,8 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
         );
         
         if (existingTranscript) {
-          // Update course units based on Excel data
-          const updatedCourseUnits = existingTranscript.courseUnits.map(unit => {
-            const unitName = unit.name.toUpperCase().trim();
-            
-            // Look for matching column names in Excel data for grades - more comprehensive matching
-            const possibleCatKeys = [
-              `${unitName}_CAT`, 
-              `${unitName.toLowerCase()}_cat`, 
-              `${unitName} CAT`,
-              `${unit.name}_CAT`, 
-              `${unit.name.toLowerCase()}_cat`, 
-              `${unit.name} CAT`
-            ];
-            
-            const possibleExamKeys = [
-              `${unitName}_EXAM`, 
-              `${unitName.toLowerCase()}_exam`, 
-              `${unitName} EXAM`,
-              `${unit.name}_EXAM`, 
-              `${unit.name.toLowerCase()}_exam`, 
-              `${unit.name} EXAM`
-            ];
-            
-            const possibleTotalKeys = [
-              `${unitName}_TOTAL`, 
-              `${unitName.toLowerCase()}_total`, 
-              `${unitName} TOTAL`,
-              `${unit.name}_TOTAL`, 
-              `${unit.name.toLowerCase()}_total`, 
-              `${unit.name} TOTAL`
-            ];
-            
-            // Find the first matching key in the row data
-            const catKey = possibleCatKeys.find(key => row[key] !== undefined);
-            const examKey = possibleExamKeys.find(key => row[key] !== undefined);
-            const totalKey = possibleTotalKeys.find(key => row[key] !== undefined);
-            
-            // Get values if keys were found
-            const catValue = catKey ? row[catKey] : unit.cat;
-            const examValue = examKey ? row[examKey] : unit.exam;
-            const totalValue = totalKey ? row[totalKey] : unit.total;
-            
-            // Calculate grade based on total if available
-            let grade = unit.grade;
-            if (totalValue !== null && totalValue !== undefined) {
-              const total = Number(totalValue);
-              if (!isNaN(total)) {
-                if (total >= 70) grade = "A";
-                else if (total >= 60) grade = "B";
-                else if (total >= 50) grade = "C";
-                else if (total >= 40) grade = "D";
-                else grade = "E";
-              }
-            }
-
-            // Add extra debugging to help diagnose import issues
-            if (catKey || examKey || totalKey) {
-              console.log(`Found matches for ${unit.name}: CAT=${catKey}, EXAM=${examKey}, TOTAL=${totalKey}`);
-            }
-
-            return {
-              ...unit,
-              cat: catValue !== undefined ? Number(catValue) : unit.cat,
-              exam: examValue !== undefined ? Number(examValue) : unit.exam,
-              total: totalValue !== undefined ? Number(totalValue) : unit.total,
-              grade
-            };
-          });
-
-          // Update transcript with new data
-          const updatedTranscript = {
-            ...existingTranscript,
-            courseUnits: updatedCourseUnits,
-            remarks: row.remarks || existingTranscript.remarks,
-            managerComments: row.managerComments || existingTranscript.managerComments,
-            hodComments: row.hodComments || existingTranscript.hodComments,
-            hodName: row.hodName || existingTranscript.hodName,
-            closingDay: row.closingDay || existingTranscript.closingDay,
-            openingDay: row.openingDay || existingTranscript.openingDay,
-            feeBalance: row.feeBalance || existingTranscript.feeBalance,
-          };
-
-          // Update transcript in state
-          setTranscripts((prev) =>
-            prev.map((t) => (t.id === updatedTranscript.id ? updatedTranscript : t))
-          );
-
-          // Update student info if needed
-          const updatedStudent = {
-            ...existingStudent,
-            name: row.name || existingStudent.name,
-            course: row.course || existingStudent.course,
-            schoolYear: row.schoolYear || existingStudent.schoolYear,
-          };
-
-          setStudents((prev) =>
-            prev.map((s) => (s.id === updatedStudent.id ? updatedStudent : s))
-          );
-
+          // Process update for existing transcript
+          processTranscriptData(existingTranscript, row, true);
           studentsUpdated++;
         }
       } else {
@@ -274,88 +194,90 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
         // Get the transcript for the new student and update with data
         const newTranscript = getStudentTranscript(newStudent.id);
         if (newTranscript) {
-          const updatedCourseUnits = newTranscript.courseUnits.map(unit => {
-            const unitName = unit.name.toUpperCase().trim();
-            
-            // Look for matching column names in Excel data for grades - more comprehensive matching
-            const possibleCatKeys = [
-              `${unitName}_CAT`, 
-              `${unitName.toLowerCase()}_cat`, 
-              `${unitName} CAT`,
-              `${unit.name}_CAT`, 
-              `${unit.name.toLowerCase()}_cat`, 
-              `${unit.name} CAT`
-            ];
-            
-            const possibleExamKeys = [
-              `${unitName}_EXAM`, 
-              `${unitName.toLowerCase()}_exam`, 
-              `${unitName} EXAM`,
-              `${unit.name}_EXAM`, 
-              `${unit.name.toLowerCase()}_exam`, 
-              `${unit.name} EXAM`
-            ];
-            
-            const possibleTotalKeys = [
-              `${unitName}_TOTAL`, 
-              `${unitName.toLowerCase()}_total`, 
-              `${unitName} TOTAL`,
-              `${unit.name}_TOTAL`, 
-              `${unit.name.toLowerCase()}_total`, 
-              `${unit.name} TOTAL`
-            ];
-            
-            // Find the first matching key in the row data
-            const catKey = possibleCatKeys.find(key => row[key] !== undefined);
-            const examKey = possibleExamKeys.find(key => row[key] !== undefined);
-            const totalKey = possibleTotalKeys.find(key => row[key] !== undefined);
-            
-            // Get values if keys were found
-            const catValue = catKey ? row[catKey] : null;
-            const examValue = examKey ? row[examKey] : null;
-            const totalValue = totalKey ? row[totalKey] : null;
-            
-            // Calculate grade based on total if available
-            let grade = null;
-            if (totalValue !== null && totalValue !== undefined) {
-              const total = Number(totalValue);
-              if (!isNaN(total)) {
-                if (total >= 70) grade = "A";
-                else if (total >= 60) grade = "B";
-                else if (total >= 50) grade = "C";
-                else if (total >= 40) grade = "D";
-                else grade = "E";
-              }
-            }
-            
-            return {
-              ...unit,
-              cat: catValue !== undefined ? Number(catValue) : null,
-              exam: examValue !== undefined ? Number(examValue) : null,
-              total: totalValue !== undefined ? Number(totalValue) : null,
-              grade
-            };
-          });
-
-          const updatedTranscript = {
-            ...newTranscript,
-            courseUnits: updatedCourseUnits,
-            remarks: row.remarks || "",
-            managerComments: row.managerComments || "",
-            hodComments: row.hodComments || "",
-            hodName: row.hodName || "",
-            closingDay: row.closingDay || "",
-            openingDay: row.openingDay || "",
-            feeBalance: row.feeBalance || "",
-          };
-
-          updateTranscript(updatedTranscript);
+          processTranscriptData(newTranscript, row, false);
           studentsAdded++;
         }
       }
     });
 
     return { studentsAdded, studentsUpdated };
+  };
+
+  // Helper function to process transcript data from Excel row
+  const processTranscriptData = (transcript: Transcript, row: any, isUpdate: boolean) => {
+    console.log("Processing transcript data for:", transcript.student.name);
+    
+    // Process course units
+    const updatedCourseUnits = transcript.courseUnits.map(unit => {
+      const unitName = unit.name.toUpperCase().trim();
+      
+      // Direct matching approach for Excel columns
+      const catKey = `${unitName}_CAT`;
+      const examKey = `${unitName}_EXAM`;
+      const totalKey = `${unitName}_TOTAL`;
+      
+      console.log(`Checking for unit ${unitName}:`, {
+        "CAT key exists": catKey in row,
+        "EXAM key exists": examKey in row,
+        "TOTAL key exists": totalKey in row
+      });
+      
+      // Get values if keys were found
+      const catValue = row[catKey];
+      const examValue = row[examKey];
+      const totalValue = row[totalKey];
+      
+      // Calculate grade based on total if available
+      let grade = unit.grade;
+      if (totalValue !== undefined && totalValue !== null) {
+        const total = Number(totalValue);
+        if (!isNaN(total)) {
+          if (total >= 70) grade = "A";
+          else if (total >= 60) grade = "B";
+          else if (total >= 50) grade = "C";
+          else if (total >= 40) grade = "D";
+          else grade = "E";
+        }
+      }
+
+      return {
+        ...unit,
+        cat: catValue !== undefined ? Number(catValue) : (isUpdate ? unit.cat : null),
+        exam: examValue !== undefined ? Number(examValue) : (isUpdate ? unit.exam : null),
+        total: totalValue !== undefined ? Number(totalValue) : (isUpdate ? unit.total : null),
+        grade
+      };
+    });
+
+    // Update additional fields
+    const updatedTranscript = {
+      ...transcript,
+      courseUnits: updatedCourseUnits,
+      closingDay: row.closingDay !== undefined ? row.closingDay : transcript.closingDay,
+      openingDay: row.openingDay !== undefined ? row.openingDay : transcript.openingDay,
+      feeBalance: row.feeBalance !== undefined ? row.feeBalance : transcript.feeBalance,
+      managerComments: row.managerComments !== undefined ? row.managerComments : transcript.managerComments,
+      hodComments: row.hodComments !== undefined ? row.hodComments : transcript.hodComments,
+      hodName: row.hodName !== undefined ? row.hodName : transcript.hodName,
+    };
+
+    // Update the transcript in state
+    updateTranscript(updatedTranscript);
+    
+    // Log the updated transcript for debugging
+    console.log("Updated transcript:", updatedTranscript);
+    
+    // Also update student info if needed
+    if (isUpdate) {
+      const updatedStudent = {
+        ...transcript.student,
+        name: row.name || transcript.student.name,
+        course: row.course || transcript.student.course,
+        schoolYear: row.schoolYear || transcript.student.schoolYear,
+      };
+
+      updateStudent(updatedStudent);
+    }
   };
 
   const importFromExcel = async (file: File): Promise<void> => {
@@ -375,6 +297,8 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
           const sheet = workbook.Sheets[sheetName];
           const jsonData = XLSX.utils.sheet_to_json(sheet);
 
+          console.log("Raw Excel data:", jsonData);
+          
           const { studentsAdded, studentsUpdated } = processExcelData(jsonData);
           
           toast.success(`Import successful: ${studentsAdded} students added, ${studentsUpdated} students updated`);

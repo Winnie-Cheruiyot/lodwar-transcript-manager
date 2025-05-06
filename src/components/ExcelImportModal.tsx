@@ -70,7 +70,7 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
       "DIGITAL LITERACY"
     ];
 
-    // Create headers
+    // Create headers row - exact column names are important for import
     const headers = {
       name: "Student Name",
       admissionNumber: "Admission Number",
@@ -78,24 +78,24 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
       schoolYear: "School Year",
     };
 
-    // Add subject columns
+    // Add subject columns with exact column names needed for import
     subjects.forEach(subject => {
-      headers[`${subject}_CAT`] = `${subject} CAT`;
-      headers[`${subject}_EXAM`] = `${subject} EXAM`;
-      headers[`${subject}_TOTAL`] = `${subject} TOTAL`;
+      headers[`${subject}_CAT`] = `${subject}_CAT`;
+      headers[`${subject}_EXAM`] = `${subject}_EXAM`;
+      headers[`${subject}_TOTAL`] = `${subject}_TOTAL`;
     });
 
-    // Add additional fields
+    // Add additional fields with exact column names needed for import
     Object.assign(headers, {
-      closingDay: "Closing Day",
-      openingDay: "Opening Day",
-      feeBalance: "Fee Balance",
-      managerComments: "Manager Comments",
-      hodComments: "HOD Comments",
-      hodName: "HOD Name",
+      closingDay: "closingDay",
+      openingDay: "openingDay",
+      feeBalance: "feeBalance",
+      managerComments: "managerComments",
+      hodComments: "hodComments",
+      hodName: "hodName",
     });
 
-    // Create sample row
+    // Create sample data row
     const sampleData = {
       name: "John Doe",
       admissionNumber: "ADM/2024/001",
@@ -117,7 +117,7 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
       feeBalance: "10,000",
       managerComments: "Good performance",
       hodComments: "Excellent work",
-      hodName: "Mr. John Smith",
+      hodName: "Mr. John Smith, ELECTRICAL",
     });
 
     // Create empty row template (just headers)
@@ -126,8 +126,25 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
       emptyTemplate[key] = "";
     });
 
+    // Create column descriptions to help users understand the format
+    const columnDescriptions = {
+      name: "Student full name",
+      admissionNumber: "Unique student ID",
+      course: "E.g., Electrical Installation",
+      schoolYear: "E.g., Term 1, 2024",
+      "SUBJECT_CAT": "CAT marks (max 30)",
+      "SUBJECT_EXAM": "Exam marks (max 70)",
+      "SUBJECT_TOTAL": "Total marks (max 100)",
+      closingDay: "School closing date",
+      openingDay: "School opening date",
+      feeBalance: "Outstanding fees",
+      managerComments: "Manager's remarks",
+      hodComments: "HOD's remarks",
+      hodName: "HOD name and department",
+    };
+
     // Create sheet with headers, sample row, and empty template
-    const data = [headers, sampleData, emptyTemplate];
+    const data = [headers, sampleData, emptyTemplate, columnDescriptions];
     
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
@@ -178,24 +195,24 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
                   
                   <p className="font-medium mb-1">Grade columns structure:</p>
                   <ul className="list-disc pl-5 space-y-1 mb-2">
-                    <li><strong>[SUBJECT_NAME]_CAT</strong> - CAT marks (e.g., MATHEMATICS_CAT)</li>
-                    <li><strong>[SUBJECT_NAME]_EXAM</strong> - Exam marks (e.g., MATHEMATICS_EXAM)</li>
-                    <li><strong>[SUBJECT_NAME]_TOTAL</strong> - Total marks (e.g., MATHEMATICS_TOTAL)</li>
+                    <li><strong>SUBJECT_CAT</strong> - CAT marks (e.g., MATHEMATICS_CAT)</li>
+                    <li><strong>SUBJECT_EXAM</strong> - Exam marks (e.g., MATHEMATICS_EXAM)</li>
+                    <li><strong>SUBJECT_TOTAL</strong> - Total marks (e.g., MATHEMATICS_TOTAL)</li>
                   </ul>
                   
-                  <p className="font-medium mb-1">Other optional columns:</p>
+                  <p className="font-medium mb-1">Other columns:</p>
                   <ul className="list-disc pl-5 space-y-1 mb-2">
                     <li><strong>schoolYear</strong> - School year</li>
-                    <li><strong>managerComments</strong> - Comments from manager</li>
-                    <li><strong>hodComments</strong> - Comments from HOD</li>
-                    <li><strong>hodName</strong> - Name of the HOD</li>
                     <li><strong>closingDay</strong> - School closing date</li>
                     <li><strong>openingDay</strong> - School opening date</li>
                     <li><strong>feeBalance</strong> - Outstanding fee balance</li>
+                    <li><strong>managerComments</strong> - Comments from manager</li>
+                    <li><strong>hodComments</strong> - Comments from HOD</li>
+                    <li><strong>hodName</strong> - Name of the HOD with department</li>
                   </ul>
                   
                   <p className="text-blue-500 font-medium mt-2">
-                    Important: Column names must match exactly as shown above. Download the template for a correct format example.
+                    Important: Download the template for the correct format. Column names must match exactly as shown in the template.
                   </p>
                 </div>
               </AccordionContent>
