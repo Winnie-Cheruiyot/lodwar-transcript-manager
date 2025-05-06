@@ -1,4 +1,3 @@
-
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Transcript, Student, CourseUnit, defaultCourseUnits } from "@/types/transcript";
@@ -141,34 +140,78 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
     return transcripts.find((t) => t.id === student.transcriptId) || null;
   };
 
+  const importFromExcel = async (file: File): Promise<void> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const data = e.target?.result;
+          if (!data) {
+            toast.error("Failed to read file");
+            reject(new Error("Failed to read file"));
+            return;
+          }
+
+          const workbook = XLSX.read(data, { type: "binary" });
+          const sheetName = workbook.SheetNames[0];
+          const sheet = workbook.Sheets[sheetName];
+          const jsonData = XLSX.utils.sheet_to_json(sheet, { raw: false });
+
+          console.log("Excel import - Raw data:", jsonData);
+          
+          // Process data
+          const { studentsAdded, studentsUpdated } = processExcelData(jsonData);
+          
+          if (studentsAdded + studentsUpdated > 0) {
+            toast.success(`Import successful: ${studentsAdded} students added, ${studentsUpdated} students updated`);
+            resolve();
+          } else {
+            toast.warning("No valid student records found in the file");
+            reject(new Error("No valid student records found"));
+          }
+        } catch (error) {
+          console.error("Import error:", error);
+          toast.error(`Import failed: ${error instanceof Error ? error.message : "Unknown error"}`);
+          reject(error);
+        }
+      };
+
+      reader.onerror = () => {
+        toast.error("Failed to read file");
+        reject(new Error("Failed to read file"));
+      };
+
+      reader.readAsBinaryString(file);
+    });
+  };
+
   const processExcelData = (data: any[]) => {
     let studentsAdded = 0;
     let studentsUpdated = 0;
     
-    console.log("Processing Excel data:", data);
+    console.log(`Processing ${data.length} rows from Excel`);
     
-    // Remove header and explanation rows
-    const dataRows = data.filter((row, index) => {
-      // Skip first two rows (headers and explanations) and check for required fields
-      return index > 1 && row.name && row.admissionNumber && row.course;
+    if (!Array.isArray(data) || data.length === 0) {
+      console.error("No data found in Excel file or invalid format");
+      throw new Error("Invalid Excel format");
+    }
+    
+    // Filter out empty rows and header/instruction rows
+    const validRows = data.filter(row => {
+      // Must have the required fields
+      const hasRequiredFields = row.name && row.admissionNumber && row.course;
+      console.log(`Row check - name: ${row.name}, admissionNumber: ${row.admissionNumber}, course: ${row.course}, valid: ${hasRequiredFields}`);
+      return hasRequiredFields;
     });
     
-    console.log("Valid data rows:", dataRows);
+    console.log(`Found ${validRows.length} valid rows with required fields`);
     
-    if (dataRows.length === 0) {
+    if (validRows.length === 0) {
       throw new Error("No valid data rows found in the Excel file");
     }
 
-    dataRows.forEach((row) => {
-      // Output raw row data for debugging
-      console.log("Processing row:", row);
-      
-      // Check for required fields
-      if (!row.name || !row.admissionNumber || !row.course) {
-        console.log("Skipping row due to missing required fields");
-        return;
-      }
-      
+    validRows.forEach((row) => {
+      // Check for existing student by admission number
       const existingStudent = students.find(
         (s) => s.admissionNumber === row.admissionNumber
       );
@@ -180,12 +223,13 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
         );
         
         if (existingTranscript) {
-          // Process update for existing transcript
+          console.log(`Updating existing student: ${existingStudent.name} (${existingStudent.admissionNumber})`);
           processTranscriptData(existingTranscript, row, true);
           studentsUpdated++;
         }
       } else {
         // Create new student
+        console.log(`Adding new student: ${row.name} (${row.admissionNumber})`);
         const newStudent = addStudent({
           name: row.name,
           admissionNumber: row.admissionNumber,
@@ -207,53 +251,54 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
 
   // Helper function to process transcript data from Excel row
   const processTranscriptData = (transcript: Transcript, row: any, isUpdate: boolean) => {
-    console.log("Processing transcript data for:", transcript.student.name);
-    console.log("Row data:", row);
+    console.log(`Processing transcript data for ${transcript.student.name}`);
     
     // Process course units
     const updatedCourseUnits = transcript.courseUnits.map(unit => {
       const unitName = unit.name;
       
-      // Create exact column names that match the Excel template
+      // Column names that match the Excel template exactly
       const catKey = `${unitName}_CAT`;
       const examKey = `${unitName}_EXAM`;
       const totalKey = `${unitName}_TOTAL`;
       
-      console.log(`Checking for unit ${unitName}:`, {
-        "CAT key": catKey,
-        "CAT exists": catKey in row,
-        "CAT value": row[catKey],
-        "EXAM key": examKey,
-        "EXAM exists": examKey in row,
-        "EXAM value": row[examKey],
-        "TOTAL key": totalKey,
-        "TOTAL exists": totalKey in row,
-        "TOTAL value": row[totalKey]
-      });
+      console.log(`Checking for ${unitName} marks - CAT: ${row[catKey]}, EXAM: ${row[examKey]}, TOTAL: ${row[totalKey]}`);
       
-      // Get values if keys were found
+      // Get values from Excel (or keep existing for updates)
       let cat = isUpdate ? unit.cat : null;
       let exam = isUpdate ? unit.exam : null;
       let total = isUpdate ? unit.total : null;
       
+      // Process CAT score if present
       if (row[catKey] !== undefined && row[catKey] !== "") {
-        cat = Number(row[catKey]);
-        if (isNaN(cat)) cat = isUpdate ? unit.cat : null;
+        const parsedCat = parseFloat(row[catKey]);
+        if (!isNaN(parsedCat)) {
+          cat = parsedCat;
+          console.log(`Set ${unitName} CAT to ${cat}`);
+        }
       }
       
+      // Process EXAM score if present
       if (row[examKey] !== undefined && row[examKey] !== "") {
-        exam = Number(row[examKey]);
-        if (isNaN(exam)) exam = isUpdate ? unit.exam : null;
+        const parsedExam = parseFloat(row[examKey]);
+        if (!isNaN(parsedExam)) {
+          exam = parsedExam;
+          console.log(`Set ${unitName} EXAM to ${exam}`);
+        }
       }
       
+      // Process TOTAL score if present
       if (row[totalKey] !== undefined && row[totalKey] !== "") {
-        total = Number(row[totalKey]);
-        if (isNaN(total)) total = isUpdate ? unit.total : null;
+        const parsedTotal = parseFloat(row[totalKey]);
+        if (!isNaN(parsedTotal)) {
+          total = parsedTotal;
+          console.log(`Set ${unitName} TOTAL to ${total}`);
+        }
       }
       
       // Calculate grade based on total if available
       let grade = unit.grade;
-      if (total !== null && !isNaN(total)) {
+      if (total !== null) {
         if (total >= 70) grade = "A";
         else if (total >= 60) grade = "B";
         else if (total >= 50) grade = "C";
@@ -281,8 +326,8 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
       hodComments: row.hodComments || transcript.hodComments,
       hodName: row.hodName || transcript.hodName,
     };
-
-    console.log("Updated transcript:", updatedTranscript);
+    
+    console.log(`Additional fields - closingDay: ${updatedTranscript.closingDay}, openingDay: ${updatedTranscript.openingDay}, feeBalance: ${updatedTranscript.feeBalance}`);
 
     // Update the transcript in state
     updateTranscript(updatedTranscript);
@@ -298,45 +343,6 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
 
       updateStudent(updatedStudent);
     }
-  };
-
-  const importFromExcel = async (file: File): Promise<void> => {
-    return new Promise((resolve, reject) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const data = e.target?.result;
-          if (!data) {
-            toast.error("Failed to read file");
-            reject(new Error("Failed to read file"));
-            return;
-          }
-
-          const workbook = XLSX.read(data, { type: "binary" });
-          const sheetName = workbook.SheetNames[0];
-          const sheet = workbook.Sheets[sheetName];
-          const jsonData = XLSX.utils.sheet_to_json(sheet);
-
-          console.log("Raw Excel data:", jsonData);
-          
-          const { studentsAdded, studentsUpdated } = processExcelData(jsonData);
-          
-          toast.success(`Import successful: ${studentsAdded} students added, ${studentsUpdated} students updated`);
-          resolve();
-        } catch (error) {
-          console.error("Import error:", error);
-          toast.error(`Import failed: ${error instanceof Error ? error.message : "Unknown error"}`);
-          reject(error);
-        }
-      };
-
-      reader.onerror = () => {
-        toast.error("Failed to read file");
-        reject(new Error("Failed to read file"));
-      };
-
-      reader.readAsBinaryString(file);
-    });
   };
 
   return (

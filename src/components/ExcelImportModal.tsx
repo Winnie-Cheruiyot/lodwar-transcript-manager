@@ -60,103 +60,99 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
   };
 
   const downloadSampleTemplate = () => {
-    // Get the course units from our default units
-    const courseUnits = defaultCourseUnits.map(unit => unit.name);
-
-    // Create workbook and worksheet
+    // Create workbook
     const workbook = XLSX.utils.book_new();
     
-    // Create the headers - using exact column names that our import function expects
-    const headers = {
-      name: "Student Name",
-      admissionNumber: "Admission Number",
-      course: "Course Name",
-      schoolYear: "School Year",
-    };
+    // Create headers worksheet
+    const headers = [
+      "name", "admissionNumber", "course", "schoolYear",
+      // Add all subject columns with exact structure needed
+    ];
     
-    // Add subject columns with exact field names needed for import
-    courseUnits.forEach(subject => {
-      headers[`${subject}_CAT`] = `${subject}_CAT`;
-      headers[`${subject}_EXAM`] = `${subject}_EXAM`;
-      headers[`${subject}_TOTAL`] = `${subject}_TOTAL`;
+    // Add subject columns
+    defaultCourseUnits.forEach(unit => {
+      headers.push(`${unit.name}_CAT`);
+      headers.push(`${unit.name}_EXAM`);
+      headers.push(`${unit.name}_TOTAL`);
     });
     
     // Add additional fields
-    Object.assign(headers, {
-      closingDay: "closingDay",
-      openingDay: "openingDay",
-      feeBalance: "feeBalance",
-      managerComments: "managerComments",
-      hodComments: "hodComments",
-      hodName: "hodName"
-    });
-
-    // Create sample data row
-    const sampleRow = {
-      name: "John Doe",
-      admissionNumber: "ADM/2024/001",
-      course: "Electrical Installation",
-      schoolYear: "2024",
-    };
+    headers.push("closingDay", "openingDay", "feeBalance", "managerComments", "hodComments", "hodName");
     
-    // Add sample grades for each subject
-    courseUnits.forEach(subject => {
-      sampleRow[`${subject}_CAT`] = 25;
-      sampleRow[`${subject}_EXAM`] = 55;
-      sampleRow[`${subject}_TOTAL`] = 80;
-    });
-    
-    // Add sample additional data
-    Object.assign(sampleRow, {
-      closingDay: "December 15, 2024",
-      openingDay: "January 10, 2025",
-      feeBalance: "10,000",
-      managerComments: "Good progress overall",
-      hodComments: "Excellent performance in practical",
-      hodName: "Mr. John Smith"
-    });
-    
-    // Create empty template row
-    const emptyRow = {};
-    Object.keys(headers).forEach(key => {
-      emptyRow[key] = "";
-    });
-    
-    // Add explanation row
-    const explanationRow = {
-      name: "REQUIRED: Full student name",
-      admissionNumber: "REQUIRED: Unique ID",
-      course: "REQUIRED: E.g. Electrical Installation",
-      schoolYear: "E.g. 2024",
-    };
-    
-    courseUnits.forEach(subject => {
-      explanationRow[`${subject}_CAT`] = "CAT marks (max 30)";
-      explanationRow[`${subject}_EXAM`] = "Exam marks (max 70)";
-      explanationRow[`${subject}_TOTAL`] = "Total marks (max 100)";
-    });
-    
-    Object.assign(explanationRow, {
-      closingDay: "School closing date",
-      openingDay: "School opening date",
-      feeBalance: "Outstanding fees amount",
-      managerComments: "Manager's comments",
-      hodComments: "HOD's comments",
-      hodName: "Full HOD name"
-    });
-    
-    // Create the main worksheet with headers, explanations, a sample row and an empty row
-    const data = [
+    // Create sample data with all required fields
+    const sampleData = [
+      // Headers row
       headers,
-      explanationRow,
-      sampleRow,
-      emptyRow
+      
+      // Explanation row
+      [
+        "REQUIRED: Full student name",
+        "REQUIRED: Unique ID",
+        "REQUIRED: E.g. Electrical Installation",
+        "E.g. 2024",
+        // Add explanations for all subject columns
+      ].concat(
+        // Add subject column explanations
+        defaultCourseUnits.flatMap(unit => [
+          "CAT marks (max 30)",
+          "Exam marks (max 70)",
+          "Total marks (max 100)"
+        ])
+      ).concat([
+        "School closing date",
+        "School opening date",
+        "Outstanding fees amount",
+        "Manager's comments",
+        "HOD's comments",
+        "Full HOD name"
+      ]),
+      
+      // Example data row
+      [
+        "John Doe",
+        "ADM/2024/001",
+        "Electrical Installation",
+        "2024",
+        // Add sample grades for all subjects
+      ].concat(
+        // Add sample grades for each subject
+        defaultCourseUnits.flatMap(unit => [25, 55, 80])
+      ).concat([
+        "December 15, 2024",
+        "January 10, 2025",
+        "10000",
+        "Good progress overall",
+        "Excellent performance in practical",
+        "Mr. John Smith"
+      ]),
+      
+      // Empty template row
+      [
+        "",
+        "",
+        "",
+        "",
+        // Empty cells for all subjects
+      ].concat(
+        // Empty cells for all subject grades
+        defaultCourseUnits.flatMap(() => ["", "", ""])
+      ).concat([
+        "",
+        "",
+        "",
+        "",
+        "",
+        ""
+      ])
     ];
     
-    const worksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true });
+    // Create the worksheet
+    const worksheet = XLSX.utils.aoa_to_sheet(sampleData);
     
-    // Add column auto-sizing
-    const colWidths = Object.keys(headers).map(key => ({ wch: Math.max(20, key.length) }));
+    // Auto-size columns
+    const colWidths = headers.map(header => ({
+      wch: Math.max(20, header.length)
+    }));
     worksheet['!cols'] = colWidths;
     
     // Add the worksheet to the workbook
@@ -164,20 +160,19 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
     
     // Add instructions worksheet
     const instructionsData = [
-      { col1: "IMPORTANT INSTRUCTIONS:" },
-      { col1: "1. Do not change the column headers - they must match exactly as shown" },
-      { col1: "2. Each row represents one student record" },
-      { col1: "3. Subject columns use the format: SUBJECTNAME_CAT, SUBJECTNAME_EXAM, SUBJECTNAME_TOTAL" },
-      { col1: "4. Required fields: name, admissionNumber, and course" },
-      { col1: "5. The first row contains headers and should not be deleted" },
-      { col1: "6. The second row contains explanations and can be deleted" },
-      { col1: "7. The third row is a sample data row and can be deleted" },
-      { col1: "" },
-      { col1: "Subject name examples:" },
-      ...courseUnits.map(unit => ({ col1: `- ${unit}` }))
+      ["IMPORTANT INSTRUCTIONS:"],
+      ["1. The first row contains column names - DO NOT modify these names"],
+      ["2. The second row contains explanations and can be deleted"],
+      ["3. The third row is a sample data row and can be deleted"],
+      ["4. Each row represents one student record"],
+      ["5. Required fields: name, admissionNumber, and course"],
+      ["6. Subject columns use format: SUBJECTNAME_CAT, SUBJECTNAME_EXAM, SUBJECTNAME_TOTAL"],
+      [""],
+      ["Available subjects:"],
+      ...defaultCourseUnits.map(unit => [`- ${unit.name}`])
     ];
     
-    const instructionsWs = XLSX.utils.json_to_sheet(instructionsData);
+    const instructionsWs = XLSX.utils.aoa_to_sheet(instructionsData);
     XLSX.utils.book_append_sheet(workbook, instructionsWs, "Instructions");
     
     // Write the file and download it
@@ -217,34 +212,40 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
             <AccordionItem value="format">
               <AccordionTrigger>Excel Format Instructions</AccordionTrigger>
               <AccordionContent>
-                <div className="text-sm text-gray-500">
-                  <p className="font-medium mb-1">Required columns:</p>
-                  <ul className="list-disc pl-5 space-y-1 mb-2">
-                    <li><strong>name</strong> - Student name</li>
-                    <li><strong>admissionNumber</strong> - Student admission number</li>
-                    <li><strong>course</strong> - Course name</li>
-                  </ul>
+                <div className="text-sm text-gray-500 space-y-4">
+                  <div>
+                    <p className="font-medium mb-1">Required columns:</p>
+                    <ul className="list-disc pl-5 space-y-1 mb-2">
+                      <li><strong>name</strong> - Student name</li>
+                      <li><strong>admissionNumber</strong> - Student admission number</li>
+                      <li><strong>course</strong> - Course name</li>
+                    </ul>
+                  </div>
                   
-                  <p className="font-medium mb-1">Grade columns structure:</p>
-                  <ul className="list-disc pl-5 space-y-1 mb-2">
-                    <li><strong>SUBJECT_CAT</strong> - CAT marks (e.g., MATHEMATICS_CAT)</li>
-                    <li><strong>SUBJECT_EXAM</strong> - Exam marks (e.g., MATHEMATICS_EXAM)</li>
-                    <li><strong>SUBJECT_TOTAL</strong> - Total marks (e.g., MATHEMATICS_TOTAL)</li>
-                  </ul>
+                  <div>
+                    <p className="font-medium mb-1">Grade columns structure:</p>
+                    <ul className="list-disc pl-5 space-y-1 mb-2">
+                      <li><strong>SUBJECT_CAT</strong> - CAT marks (e.g., MATHEMATICS_CAT)</li>
+                      <li><strong>SUBJECT_EXAM</strong> - Exam marks (e.g., MATHEMATICS_EXAM)</li>
+                      <li><strong>SUBJECT_TOTAL</strong> - Total marks (e.g., MATHEMATICS_TOTAL)</li>
+                    </ul>
+                  </div>
                   
-                  <p className="font-medium mb-1">Other columns:</p>
-                  <ul className="list-disc pl-5 space-y-1 mb-2">
-                    <li><strong>schoolYear</strong> - School year</li>
-                    <li><strong>closingDay</strong> - School closing date</li>
-                    <li><strong>openingDay</strong> - School opening date</li>
-                    <li><strong>feeBalance</strong> - Outstanding fee balance</li>
-                    <li><strong>managerComments</strong> - Comments from manager</li>
-                    <li><strong>hodComments</strong> - Comments from HOD</li>
-                    <li><strong>hodName</strong> - Name of the HOD</li>
-                  </ul>
+                  <div>
+                    <p className="font-medium mb-1">Other columns:</p>
+                    <ul className="list-disc pl-5 space-y-1 mb-2">
+                      <li><strong>schoolYear</strong> - School year</li>
+                      <li><strong>closingDay</strong> - School closing date</li>
+                      <li><strong>openingDay</strong> - School opening date</li>
+                      <li><strong>feeBalance</strong> - Outstanding fee balance</li>
+                      <li><strong>managerComments</strong> - Comments from manager</li>
+                      <li><strong>hodComments</strong> - Comments from HOD</li>
+                      <li><strong>hodName</strong> - Name of the HOD</li>
+                    </ul>
+                  </div>
                   
-                  <p className="text-blue-500 font-medium mt-2">
-                    Important: Download the template for the correct format. Column names must match exactly as shown in the template.
+                  <p className="text-blue-500 font-medium">
+                    Important: Download and use the template. Do not modify the column names or format.
                   </p>
                 </div>
               </AccordionContent>
