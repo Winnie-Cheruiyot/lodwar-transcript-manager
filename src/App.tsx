@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import Students from "./pages/Students";
 import TranscriptDetail from "./pages/TranscriptDetail";
 import NotFound from "./pages/NotFound";
+import HowToUse from "./pages/HowToUse";
 import { TranscriptProvider } from "./context/TranscriptContext";
 
 const queryClient = new QueryClient();
@@ -25,6 +26,7 @@ const App = () => (
               <Route path="/" element={<Dashboard />} />
               <Route path="/students" element={<Students />} />
               <Route path="/transcripts/:id" element={<TranscriptDetail />} />
+              <Route path="/how-to-use" element={<HowToUse />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </Layout>

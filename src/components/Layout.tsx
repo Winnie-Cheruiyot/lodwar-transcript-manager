@@ -1,6 +1,7 @@
 
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
+import { HelpCircle } from "lucide-react";
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -37,6 +38,16 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                     }`}
                   >
                     Students
+                  </Link>
+                </li>
+                <li>
+                  <Link
+                    to="/how-to-use"
+                    className={`hover:underline flex items-center ${
+                      location.pathname === "/how-to-use" ? "font-bold underline" : ""
+                    }`}
+                  >
+                    <HelpCircle className="h-4 w-4 mr-1" /> How to Use
                   </Link>
                 </li>
               </ul>
