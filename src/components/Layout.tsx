@@ -16,7 +16,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="container mx-auto py-4 px-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
             <Link to="/" className="flex items-center space-x-2 mb-4 md:mb-0">
-              <h1 className="text-xl font-bold">Lodwar VTC Transcript Manager</h1>
+              <h1 className="text-xl font-bold">Lodwar VTC Transcript</h1>
             </Link>
             <nav>
               <ul className="flex space-x-6">
