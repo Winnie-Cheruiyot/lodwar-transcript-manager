@@ -1,3 +1,4 @@
+
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { Transcript, Student, CourseUnit, defaultCourseUnits } from "@/types/transcript";
@@ -146,9 +147,10 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
     
     console.log("Processing Excel data:", data);
     
-    // Remove header rows if they exist (first row usually contains column names)
-    const dataRows = data.filter(row => {
-      return row.name && row.admissionNumber && row.course;
+    // Remove header and explanation rows
+    const dataRows = data.filter((row, index) => {
+      // Skip first two rows (headers and explanations) and check for required fields
+      return index > 1 && row.name && row.admissionNumber && row.course;
     });
     
     console.log("Valid data rows:", dataRows);
@@ -206,45 +208,64 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
   // Helper function to process transcript data from Excel row
   const processTranscriptData = (transcript: Transcript, row: any, isUpdate: boolean) => {
     console.log("Processing transcript data for:", transcript.student.name);
+    console.log("Row data:", row);
     
     // Process course units
     const updatedCourseUnits = transcript.courseUnits.map(unit => {
-      const unitName = unit.name.toUpperCase().trim();
+      const unitName = unit.name;
       
-      // Direct matching approach for Excel columns
+      // Create exact column names that match the Excel template
       const catKey = `${unitName}_CAT`;
       const examKey = `${unitName}_EXAM`;
       const totalKey = `${unitName}_TOTAL`;
       
       console.log(`Checking for unit ${unitName}:`, {
-        "CAT key exists": catKey in row,
-        "EXAM key exists": examKey in row,
-        "TOTAL key exists": totalKey in row
+        "CAT key": catKey,
+        "CAT exists": catKey in row,
+        "CAT value": row[catKey],
+        "EXAM key": examKey,
+        "EXAM exists": examKey in row,
+        "EXAM value": row[examKey],
+        "TOTAL key": totalKey,
+        "TOTAL exists": totalKey in row,
+        "TOTAL value": row[totalKey]
       });
       
       // Get values if keys were found
-      const catValue = row[catKey];
-      const examValue = row[examKey];
-      const totalValue = row[totalKey];
+      let cat = isUpdate ? unit.cat : null;
+      let exam = isUpdate ? unit.exam : null;
+      let total = isUpdate ? unit.total : null;
+      
+      if (row[catKey] !== undefined && row[catKey] !== "") {
+        cat = Number(row[catKey]);
+        if (isNaN(cat)) cat = isUpdate ? unit.cat : null;
+      }
+      
+      if (row[examKey] !== undefined && row[examKey] !== "") {
+        exam = Number(row[examKey]);
+        if (isNaN(exam)) exam = isUpdate ? unit.exam : null;
+      }
+      
+      if (row[totalKey] !== undefined && row[totalKey] !== "") {
+        total = Number(row[totalKey]);
+        if (isNaN(total)) total = isUpdate ? unit.total : null;
+      }
       
       // Calculate grade based on total if available
       let grade = unit.grade;
-      if (totalValue !== undefined && totalValue !== null) {
-        const total = Number(totalValue);
-        if (!isNaN(total)) {
-          if (total >= 70) grade = "A";
-          else if (total >= 60) grade = "B";
-          else if (total >= 50) grade = "C";
-          else if (total >= 40) grade = "D";
-          else grade = "E";
-        }
+      if (total !== null && !isNaN(total)) {
+        if (total >= 70) grade = "A";
+        else if (total >= 60) grade = "B";
+        else if (total >= 50) grade = "C";
+        else if (total >= 40) grade = "D";
+        else grade = "E";
       }
 
       return {
         ...unit,
-        cat: catValue !== undefined ? Number(catValue) : (isUpdate ? unit.cat : null),
-        exam: examValue !== undefined ? Number(examValue) : (isUpdate ? unit.exam : null),
-        total: totalValue !== undefined ? Number(totalValue) : (isUpdate ? unit.total : null),
+        cat,
+        exam,
+        total,
         grade
       };
     });
@@ -253,19 +274,18 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
     const updatedTranscript = {
       ...transcript,
       courseUnits: updatedCourseUnits,
-      closingDay: row.closingDay !== undefined ? row.closingDay : transcript.closingDay,
-      openingDay: row.openingDay !== undefined ? row.openingDay : transcript.openingDay,
-      feeBalance: row.feeBalance !== undefined ? row.feeBalance : transcript.feeBalance,
-      managerComments: row.managerComments !== undefined ? row.managerComments : transcript.managerComments,
-      hodComments: row.hodComments !== undefined ? row.hodComments : transcript.hodComments,
-      hodName: row.hodName !== undefined ? row.hodName : transcript.hodName,
+      closingDay: row.closingDay || transcript.closingDay,
+      openingDay: row.openingDay || transcript.openingDay,
+      feeBalance: row.feeBalance || transcript.feeBalance,
+      managerComments: row.managerComments || transcript.managerComments,
+      hodComments: row.hodComments || transcript.hodComments,
+      hodName: row.hodName || transcript.hodName,
     };
+
+    console.log("Updated transcript:", updatedTranscript);
 
     // Update the transcript in state
     updateTranscript(updatedTranscript);
-    
-    // Log the updated transcript for debugging
-    console.log("Updated transcript:", updatedTranscript);
     
     // Also update student info if needed
     if (isUpdate) {
@@ -304,6 +324,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
           toast.success(`Import successful: ${studentsAdded} students added, ${studentsUpdated} students updated`);
           resolve();
         } catch (error) {
+          console.error("Import error:", error);
           toast.error(`Import failed: ${error instanceof Error ? error.message : "Unknown error"}`);
           reject(error);
         }

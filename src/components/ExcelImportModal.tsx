@@ -16,6 +16,7 @@ import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Download } from "lucide-react";
 import * as XLSX from "xlsx";
+import { defaultCourseUnits } from "@/types/transcript";
 
 interface ExcelImportModalProps {
   isOpen: boolean;
@@ -59,96 +60,127 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
   };
 
   const downloadSampleTemplate = () => {
-    // Create sample data
-    const subjects = [
-      "TRADE THEORY", 
-      "TRADE PRACTICE", 
-      "COMMUNICATION SKILLS", 
-      "ENTREPRENEURSHIP", 
-      "MATHEMATICS", 
-      "GENERAL SCIENCE", 
-      "DIGITAL LITERACY"
-    ];
+    // Get the course units from our default units
+    const courseUnits = defaultCourseUnits.map(unit => unit.name);
 
-    // Create headers row - exact column names are important for import
+    // Create workbook and worksheet
+    const workbook = XLSX.utils.book_new();
+    
+    // Create the headers - using exact column names that our import function expects
     const headers = {
       name: "Student Name",
       admissionNumber: "Admission Number",
-      course: "Course",
+      course: "Course Name",
       schoolYear: "School Year",
     };
-
-    // Add subject columns with exact column names needed for import
-    subjects.forEach(subject => {
+    
+    // Add subject columns with exact field names needed for import
+    courseUnits.forEach(subject => {
       headers[`${subject}_CAT`] = `${subject}_CAT`;
       headers[`${subject}_EXAM`] = `${subject}_EXAM`;
       headers[`${subject}_TOTAL`] = `${subject}_TOTAL`;
     });
-
-    // Add additional fields with exact column names needed for import
+    
+    // Add additional fields
     Object.assign(headers, {
       closingDay: "closingDay",
       openingDay: "openingDay",
       feeBalance: "feeBalance",
       managerComments: "managerComments",
       hodComments: "hodComments",
-      hodName: "hodName",
+      hodName: "hodName"
     });
 
     // Create sample data row
-    const sampleData = {
+    const sampleRow = {
       name: "John Doe",
       admissionNumber: "ADM/2024/001",
       course: "Electrical Installation",
       schoolYear: "2024",
     };
-
-    // Add sample grades
-    subjects.forEach(subject => {
-      sampleData[`${subject}_CAT`] = 30;
-      sampleData[`${subject}_EXAM`] = 50;
-      sampleData[`${subject}_TOTAL`] = 80;
+    
+    // Add sample grades for each subject
+    courseUnits.forEach(subject => {
+      sampleRow[`${subject}_CAT`] = 25;
+      sampleRow[`${subject}_EXAM`] = 55;
+      sampleRow[`${subject}_TOTAL`] = 80;
     });
-
-    // Add sample additional info
-    Object.assign(sampleData, {
+    
+    // Add sample additional data
+    Object.assign(sampleRow, {
       closingDay: "December 15, 2024",
       openingDay: "January 10, 2025",
       feeBalance: "10,000",
-      managerComments: "Good performance",
-      hodComments: "Excellent work",
-      hodName: "Mr. John Smith, ELECTRICAL",
+      managerComments: "Good progress overall",
+      hodComments: "Excellent performance in practical",
+      hodName: "Mr. John Smith"
     });
-
-    // Create empty row template (just headers)
-    const emptyTemplate = {};
+    
+    // Create empty template row
+    const emptyRow = {};
     Object.keys(headers).forEach(key => {
-      emptyTemplate[key] = "";
+      emptyRow[key] = "";
     });
-
-    // Create column descriptions to help users understand the format
-    const columnDescriptions = {
-      name: "Student full name",
-      admissionNumber: "Unique student ID",
-      course: "E.g., Electrical Installation",
-      schoolYear: "E.g., Term 1, 2024",
-      "SUBJECT_CAT": "CAT marks (max 30)",
-      "SUBJECT_EXAM": "Exam marks (max 70)",
-      "SUBJECT_TOTAL": "Total marks (max 100)",
+    
+    // Add explanation row
+    const explanationRow = {
+      name: "REQUIRED: Full student name",
+      admissionNumber: "REQUIRED: Unique ID",
+      course: "REQUIRED: E.g. Electrical Installation",
+      schoolYear: "E.g. 2024",
+    };
+    
+    courseUnits.forEach(subject => {
+      explanationRow[`${subject}_CAT`] = "CAT marks (max 30)";
+      explanationRow[`${subject}_EXAM`] = "Exam marks (max 70)";
+      explanationRow[`${subject}_TOTAL`] = "Total marks (max 100)";
+    });
+    
+    Object.assign(explanationRow, {
       closingDay: "School closing date",
       openingDay: "School opening date",
-      feeBalance: "Outstanding fees",
-      managerComments: "Manager's remarks",
-      hodComments: "HOD's remarks",
-      hodName: "HOD name and department",
-    };
-
-    // Create sheet with headers, sample row, and empty template
-    const data = [headers, sampleData, emptyTemplate, columnDescriptions];
+      feeBalance: "Outstanding fees amount",
+      managerComments: "Manager's comments",
+      hodComments: "HOD's comments",
+      hodName: "Full HOD name"
+    });
     
-    const worksheet = XLSX.utils.json_to_sheet(data);
-    const workbook = XLSX.utils.book_new();
+    // Create the main worksheet with headers, explanations, a sample row and an empty row
+    const data = [
+      headers,
+      explanationRow,
+      sampleRow,
+      emptyRow
+    ];
+    
+    const worksheet = XLSX.utils.json_to_sheet(data, { skipHeader: true });
+    
+    // Add column auto-sizing
+    const colWidths = Object.keys(headers).map(key => ({ wch: Math.max(20, key.length) }));
+    worksheet['!cols'] = colWidths;
+    
+    // Add the worksheet to the workbook
     XLSX.utils.book_append_sheet(workbook, worksheet, "Template");
+    
+    // Add instructions worksheet
+    const instructionsData = [
+      { col1: "IMPORTANT INSTRUCTIONS:" },
+      { col1: "1. Do not change the column headers - they must match exactly as shown" },
+      { col1: "2. Each row represents one student record" },
+      { col1: "3. Subject columns use the format: SUBJECTNAME_CAT, SUBJECTNAME_EXAM, SUBJECTNAME_TOTAL" },
+      { col1: "4. Required fields: name, admissionNumber, and course" },
+      { col1: "5. The first row contains headers and should not be deleted" },
+      { col1: "6. The second row contains explanations and can be deleted" },
+      { col1: "7. The third row is a sample data row and can be deleted" },
+      { col1: "" },
+      { col1: "Subject name examples:" },
+      ...courseUnits.map(unit => ({ col1: `- ${unit}` }))
+    ];
+    
+    const instructionsWs = XLSX.utils.json_to_sheet(instructionsData);
+    XLSX.utils.book_append_sheet(workbook, instructionsWs, "Instructions");
+    
+    // Write the file and download it
     XLSX.writeFile(workbook, "transcript_template.xlsx");
     
     toast.success("Sample template downloaded");
@@ -208,7 +240,7 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
                     <li><strong>feeBalance</strong> - Outstanding fee balance</li>
                     <li><strong>managerComments</strong> - Comments from manager</li>
                     <li><strong>hodComments</strong> - Comments from HOD</li>
-                    <li><strong>hodName</strong> - Name of the HOD with department</li>
+                    <li><strong>hodName</strong> - Name of the HOD</li>
                   </ul>
                   
                   <p className="text-blue-500 font-medium mt-2">
