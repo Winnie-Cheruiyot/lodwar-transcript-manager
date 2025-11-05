@@ -240,7 +240,7 @@ const Dashboard = () => {
       </div>
 
       {/* Summary Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <Card>
           <CardHeader className="pb-2">
             <CardTitle className="text-lg">Total Students</CardTitle>
@@ -266,6 +266,15 @@ const Dashboard = () => {
           <CardContent>
             <div className="text-3xl font-bold">{schoolStats.passRate}%</div>
             <p className="text-sm text-gray-500">Students scoring 200+ points</p>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg">Top Performer</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="text-lg font-bold truncate">{topStudents[0]?.name || "N/A"}</div>
+            <p className="text-sm text-gray-500">{topStudents[0]?.total || 0} points</p>
           </CardContent>
         </Card>
       </div>
@@ -356,35 +365,44 @@ const Dashboard = () => {
             
             {/* Course Details */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Course Details</h3>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Course</TableHead>
-                      <TableHead>Students</TableHead>
-                      <TableHead>Average</TableHead>
-                      <TableHead>Top Student</TableHead>
-                      <TableHead>Top Score</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {courseStats.map((course) => (
-                      <TableRow key={course.name}>
-                        <TableCell className="font-medium">{course.name}</TableCell>
-                        <TableCell>{course.students}</TableCell>
-                        <TableCell>{course.average}</TableCell>
-                        <TableCell>
-                          {course.topStudents.length > 0 ? course.topStudents[0].name : "-"}
-                        </TableCell>
-                        <TableCell>
-                          {course.topStudents.length > 0 ? course.topStudents[0].total : "-"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+              <h3 className="text-lg font-medium">Top 5 Students Per Course</h3>
+              {courseStats.map((course) => (
+                <Card key={course.name}>
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-lg">{course.name}</CardTitle>
+                      <div className="text-sm text-gray-500">
+                        Average: <span className="font-bold text-lvtc-navy">{course.average}</span> | 
+                        Students: <span className="font-bold">{course.students}</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-12">Rank</TableHead>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Admission Number</TableHead>
+                            <TableHead className="text-right">Total Score</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {course.topStudents.slice(0, 5).map((student, idx) => (
+                            <TableRow key={student.admissionNumber}>
+                              <TableCell className="font-medium">{idx + 1}</TableCell>
+                              <TableCell>{student.name}</TableCell>
+                              <TableCell>{student.admissionNumber}</TableCell>
+                              <TableCell className="text-right font-semibold">{student.total}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </TabsContent>
@@ -413,37 +431,45 @@ const Dashboard = () => {
             
             {/* Subject Details */}
             <div className="space-y-4">
-              <h3 className="text-lg font-medium">Subject Details</h3>
-              <div className="rounded-md border">
-                <Table>
-                  <TableHeader>
-                    <TableRow>
-                      <TableHead>Subject</TableHead>
-                      <TableHead>Average</TableHead>
-                      <TableHead>Top Student</TableHead>
-                      <TableHead>Course</TableHead>
-                      <TableHead>Top Score</TableHead>
-                    </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                    {subjectStats.map((subject) => (
-                      <TableRow key={subject.name}>
-                        <TableCell className="font-medium">{subject.name}</TableCell>
-                        <TableCell>{subject.average}</TableCell>
-                        <TableCell>
-                          {subject.topStudents.length > 0 ? subject.topStudents[0].name : "-"}
-                        </TableCell>
-                        <TableCell>
-                          {subject.topStudents.length > 0 ? subject.topStudents[0].course : "-"}
-                        </TableCell>
-                        <TableCell>
-                          {subject.topStudents.length > 0 ? subject.topStudents[0].total : "-"}
-                        </TableCell>
-                      </TableRow>
-                    ))}
-                  </TableBody>
-                </Table>
-              </div>
+              <h3 className="text-lg font-medium">Top 5 Students Per Subject</h3>
+              {subjectStats.map((subject) => (
+                <Card key={subject.name}>
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-center">
+                      <CardTitle className="text-lg">{subject.name}</CardTitle>
+                      <div className="text-sm text-gray-500">
+                        Average: <span className="font-bold text-lvtc-navy">{subject.average}</span>
+                      </div>
+                    </div>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="rounded-md border">
+                      <Table>
+                        <TableHeader>
+                          <TableRow>
+                            <TableHead className="w-12">Rank</TableHead>
+                            <TableHead>Name</TableHead>
+                            <TableHead>Course</TableHead>
+                            <TableHead>Admission Number</TableHead>
+                            <TableHead className="text-right">Score</TableHead>
+                          </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                          {subject.topStudents.slice(0, 5).map((student, idx) => (
+                            <TableRow key={`${student.admissionNumber}-${idx}`}>
+                              <TableCell className="font-medium">{idx + 1}</TableCell>
+                              <TableCell>{student.name}</TableCell>
+                              <TableCell>{student.course}</TableCell>
+                              <TableCell>{student.admissionNumber}</TableCell>
+                              <TableCell className="text-right font-semibold">{student.total}</TableCell>
+                            </TableRow>
+                          ))}
+                        </TableBody>
+                      </Table>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
             </div>
           </div>
         </TabsContent>
