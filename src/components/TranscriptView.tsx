@@ -192,29 +192,37 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           </table>
         </div>
 
-        {/* Final Grade and Grading Scale - All on the same line */}
-        <div className="flex flex-wrap items-center bg-gray-100 p-2 rounded mb-2 gap-2">
-          <div className="font-bold text-lvtc-navy flex items-center flex-wrap gap-1">
-            FINAL GRADE: <span className="text-black">{passLevel}</span>
+        {/* Final Grade and Grading Scale - Split layout */}
+        <div className="flex justify-between items-start bg-gray-100 p-2 rounded mb-2 gap-4">
+          <div className="font-bold text-lvtc-navy flex items-center gap-2">
+            FINAL GRADE: <span className="text-black text-lg">{passLevel}</span>
           </div>
-          <div className="flex flex-wrap gap-2">
-            {passScales.map((scale, index) => (
-              <div key={index} className="flex items-center gap-1 text-xs">
-                <span className="font-semibold">{scale.level}:</span>
-                <span>{scale.range}</span>
-              </div>
-            ))}
+          <div className="flex flex-col gap-1">
+            <div className="text-xs font-semibold text-lvtc-navy mb-1">Pass Scales:</div>
+            <div className="flex flex-wrap gap-2">
+              {passScales.map((scale, index) => (
+                <div key={index} className="flex items-center gap-1 text-xs">
+                  <span className="font-semibold">{scale.level}:</span>
+                  <span>{scale.range}</span>
+                </div>
+              ))}
+            </div>
           </div>
         </div>
 
         {/* Grade Scale Legend */}
-        <div className="bg-gray-50 p-2 rounded mb-3 flex flex-wrap justify-center gap-x-3 gap-y-1">
-          {gradeScales.map((scale, index) => (
-            <div key={index} className="flex items-center gap-1 text-xs">
-              <span className="font-bold">{scale.grade}:</span>
-              <span>{scale.range}</span>
+        <div className="bg-gray-50 p-2 rounded mb-3 flex justify-end">
+          <div className="flex flex-col gap-1">
+            <div className="text-xs font-semibold text-lvtc-navy mb-1">Grade Scales:</div>
+            <div className="flex flex-wrap justify-end gap-x-3 gap-y-1">
+              {gradeScales.map((scale, index) => (
+                <div key={index} className="flex items-center gap-1 text-xs">
+                  <span className="font-bold">{scale.grade}:</span>
+                  <span>{scale.range}</span>
+                </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
 
         {/* Comments and Info Section - Improved layout with more space */}
