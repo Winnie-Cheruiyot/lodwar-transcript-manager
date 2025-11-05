@@ -116,7 +116,7 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
         // Add sample grades for all subjects
       ].concat(
         // Add sample grades for each subject
-        defaultCourseUnits.flatMap(unit => [25, 55, 80])
+        defaultCourseUnits.flatMap(unit => ["25", "55", "80"])
       ).concat([
         "December 15, 2024",
         "January 10, 2025",

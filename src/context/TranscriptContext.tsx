@@ -291,14 +291,28 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
           });
 
           // Wait for state to update, then get the transcript and update with data
-          setTimeout(() => {
-            const newTranscript = getStudentTranscript(newStudent.id);
+          const findTranscriptInStorage = (id: string) => {
+            try {
+              const stored = localStorage.getItem("transcripts");
+              if (!stored) return null;
+              const arr = JSON.parse(stored) as Transcript[];
+              return arr.find(t => t.id === id) || null;
+            } catch {
+              return null;
+            }
+          };
+          const attemptProcess = (retries = 0) => {
+            const newTranscript = findTranscriptInStorage(newStudent.transcriptId);
             if (newTranscript) {
               processTranscriptData(newTranscript, normalizedRow, false);
               console.log(`Successfully processed new student: ${newStudent.name}`);
+            } else if (retries < 20) {
+              setTimeout(() => attemptProcess(retries + 1), 100);
+            } else {
+              console.warn(`Timed out waiting for transcript for ${newStudent.name}`);
             }
-          }, 100);
-          
+          };
+          attemptProcess();
           studentsAdded++;
         }
       } catch (rowError) {
