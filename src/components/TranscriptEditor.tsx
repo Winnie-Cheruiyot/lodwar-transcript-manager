@@ -68,13 +68,13 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
   const [customCourseUnit, setCustomCourseUnit] = useState<string>("");
   const [isCustomCourseUnit, setIsCustomCourseUnit] = useState(false);
 
-  // Helper function to calculate grade based on total points
-  const calculateGrade = (total: number | null): string | null => {
-    if (total === null) return null;
-    if (total >= 70) return "A";
-    if (total >= 60) return "B";
-    if (total >= 50) return "C";
-    if (total >= 40) return "D";
+  // Helper function to calculate grade based on exam score
+  const calculateGrade = (exam: number | null): string | null => {
+    if (exam === null) return null;
+    if (exam >= 70) return "A";
+    if (exam >= 60) return "B";
+    if (exam >= 50) return "C";
+    if (exam >= 40) return "D";
     return "E";
   };
 
@@ -100,19 +100,8 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
       
       const updatedUnit = { ...unit, [field]: value };
       
-      // Auto-calculate grade when CAT or EXAM changes
-      if (field === "cat" || field === "exam") {
-        const cat = field === "cat" ? value as number : unit.cat;
-        const exam = field === "exam" ? value as number : unit.exam;
-        
-        if (cat !== null && exam !== null) {
-          updatedUnit.total = cat + exam;
-          updatedUnit.grade = calculateGrade(updatedUnit.total);
-        }
-      }
-      
-      // Auto-calculate grade when total changes
-      if (field === "total") {
+      // Auto-calculate grade when EXAM changes
+      if (field === "exam") {
         updatedUnit.grade = calculateGrade(value as number | null);
       }
       
@@ -150,9 +139,7 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
     const newUnit: CourseUnit = {
       id: Date.now().toString(),
       name: courseUnitName,
-      cat: null,
       exam: null,
-      total: null,
       grade: null
     };
 
@@ -313,14 +300,12 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
               <div className="overflow-x-auto">
                 <table className="w-full">
                   <thead>
-                    <tr className="bg-lvtc-navy text-white">
-                      <th className="p-2 text-left">Course Unit</th>
-                      <th className="p-2 text-center">CAT (30%)</th>
-                      <th className="p-2 text-center">EXAM (70%)</th>
-                      <th className="p-2 text-center">TOTAL (100%)</th>
-                      <th className="p-2 text-center">GRADE</th>
-                      <th className="p-2 text-center">Action</th>
-                    </tr>
+                      <tr className="bg-lvtc-navy text-white">
+                        <th className="p-2 text-left">Course Unit</th>
+                        <th className="p-2 text-center">EXAM (100)</th>
+                        <th className="p-2 text-center">GRADE</th>
+                        <th className="p-2 text-center">Action</th>
+                      </tr>
                   </thead>
                   <tbody>
                     {editedTranscript.courseUnits.map((unit, index) => (
@@ -336,39 +321,11 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
                           <Input
                             type="number"
                             min="0"
-                            max="30"
-                            value={unit.cat !== null ? unit.cat : ""}
-                            onChange={(e) => handleCourseUnitChange(
-                              unit.id, 
-                              "cat", 
-                              e.target.value ? Number(e.target.value) : null
-                            )}
-                            className="h-8 text-center"
-                          />
-                        </td>
-                        <td className="p-2 text-center">
-                          <Input
-                            type="number"
-                            min="0"
-                            max="70"
+                            max="100"
                             value={unit.exam !== null ? unit.exam : ""}
                             onChange={(e) => handleCourseUnitChange(
                               unit.id, 
                               "exam", 
-                              e.target.value ? Number(e.target.value) : null
-                            )}
-                            className="h-8 text-center"
-                          />
-                        </td>
-                        <td className="p-2 text-center">
-                          <Input
-                            type="number"
-                            min="0"
-                            max="100"
-                            value={unit.total !== null ? unit.total : ""}
-                            onChange={(e) => handleCourseUnitChange(
-                              unit.id, 
-                              "total", 
                               e.target.value ? Number(e.target.value) : null
                             )}
                             className="h-8 text-center"

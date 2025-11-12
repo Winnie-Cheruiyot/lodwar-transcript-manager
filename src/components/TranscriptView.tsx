@@ -10,18 +10,18 @@ interface TranscriptViewProps {
 const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting = false }) => {
   const calculateTotal = () => {
     let totalPoints = 0;
-    let subjectsWithTotal = 0;
+    let subjectsWithExam = 0;
 
     transcript.courseUnits.forEach(unit => {
-      if (unit.total !== null) {
-        totalPoints += unit.total;
-        subjectsWithTotal++;
+      if (unit.exam !== null) {
+        totalPoints += unit.exam;
+        subjectsWithExam++;
       }
     });
 
     return { 
       total: totalPoints, 
-      average: subjectsWithTotal > 0 ? Math.round(totalPoints / subjectsWithTotal) : 0
+      average: subjectsWithExam > 0 ? Math.round(totalPoints / subjectsWithExam) : 0
     };
   };
 
@@ -162,9 +162,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
             <thead>
               <tr className="bg-lvtc-navy text-white">
                 <th className="p-1 text-left">COURSE UNIT</th>
-                <th className="p-1 text-center">CAT</th>
-                <th className="p-1 text-center">EXAM</th>
-                <th className="p-1 text-center">TOTAL</th>
+                <th className="p-1 text-center">EXAM (100)</th>
                 <th className="p-1 text-center">GRADE</th>
               </tr>
             </thead>
@@ -175,16 +173,12 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
                   className={index % 2 === 0 ? "bg-lvtc-yellow/50" : "bg-white"}
                 >
                   <td className="p-1.5 font-semibold">{unit.name}</td>
-                  <td className="p-1.5 text-center">{unit.cat !== null ? unit.cat : "-"}</td>
                   <td className="p-1.5 text-center">{unit.exam !== null ? unit.exam : "-"}</td>
-                  <td className="p-1.5 text-center">{unit.total !== null ? unit.total : "-"}</td>
                   <td className="p-1.5 text-center">{unit.grade || "-"}</td>
                 </tr>
               ))}
               <tr className="bg-lvtc-yellow font-bold">
                 <td className="p-1.5">Total</td>
-                <td className="p-1.5 text-center">-</td>
-                <td className="p-1.5 text-center">-</td>
                 <td className="p-1.5 text-center">{stats.total}</td>
                 <td className="p-1.5 text-center">-</td>
               </tr>

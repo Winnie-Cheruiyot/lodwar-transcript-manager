@@ -11,9 +11,7 @@ export interface Student {
 export interface CourseUnit {
   id: string;
   name: string;
-  cat: number | null;
   exam: number | null;
-  total: number | null;
   grade: string | null;
 }
 
@@ -52,11 +50,11 @@ export const passScales = [
 ];
 
 export const defaultCourseUnits = [
-  { id: '1', name: 'TRADE THEORY', cat: null, exam: null, total: null, grade: null },
-  { id: '2', name: 'TRADE PRACTICE', cat: null, exam: null, total: null, grade: null },
-  { id: '3', name: 'COMMUNICATION SKILLS', cat: null, exam: null, total: null, grade: null },
-  { id: '4', name: 'ENTREPRENEURSHIP', cat: null, exam: null, total: null, grade: null },
-  { id: '5', name: 'MATHEMATICS', cat: null, exam: null, total: null, grade: null },
-  { id: '6', name: 'GENERAL SCIENCE', cat: null, exam: null, total: null, grade: null },
-  { id: '7', name: 'DIGITAL LITERACY', cat: null, exam: null, total: null, grade: null },
+  { id: '1', name: 'TRADE THEORY', exam: null, grade: null },
+  { id: '2', name: 'TRADE PRACTICE', exam: null, grade: null },
+  { id: '3', name: 'COMMUNICATION SKILLS', exam: null, grade: null },
+  { id: '4', name: 'ENTREPRENEURSHIP', exam: null, grade: null },
+  { id: '5', name: 'MATHEMATICS', exam: null, grade: null },
+  { id: '6', name: 'GENERAL SCIENCE', exam: null, grade: null },
+  { id: '7', name: 'DIGITAL LITERACY', exam: null, grade: null },
 ];

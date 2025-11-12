@@ -71,9 +71,7 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
     
     // Add subject columns
     defaultCourseUnits.forEach(unit => {
-      headers.push(`${unit.name}_CAT`);
       headers.push(`${unit.name}_EXAM`);
-      headers.push(`${unit.name}_TOTAL`);
     });
     
     // Add additional fields
@@ -93,11 +91,7 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
         // Add explanations for all subject columns
       ].concat(
         // Add subject column explanations
-        defaultCourseUnits.flatMap(unit => [
-          "CAT marks (max 30)",
-          "Exam marks (max 70)",
-          "Total marks (max 100)"
-        ])
+        defaultCourseUnits.map(unit => "Exam marks (max 100)")
       ).concat([
         "School closing date",
         "School opening date",
@@ -116,7 +110,7 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
         // Add sample grades for all subjects
       ].concat(
         // Add sample grades for each subject
-        defaultCourseUnits.flatMap(unit => ["25", "55", "80"])
+        defaultCourseUnits.map(unit => "80")
       ).concat([
         "December 15, 2024",
         "January 10, 2025",

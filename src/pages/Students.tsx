@@ -193,9 +193,7 @@ const Students = () => {
                     <thead>
                       <tr class="bg-lvtc-navy text-white">
                         <th class="p-1 text-left">COURSE UNIT</th>
-                        <th class="p-1 text-center">CAT</th>
-                        <th class="p-1 text-center">EXAM</th>
-                        <th class="p-1 text-center">TOTAL</th>
+                        <th class="p-1 text-center">EXAM (100)</th>
                         <th class="p-1 text-center">GRADE</th>
                       </tr>
                     </thead>
@@ -203,17 +201,13 @@ const Students = () => {
                       ${transcript.courseUnits.map((unit, index) => `
                         <tr class="${index % 2 === 0 ? "bg-lvtc-yellow/50" : "bg-white"}">
                           <td class="p-1.5 font-semibold">${unit.name}</td>
-                          <td class="p-1.5 text-center">${unit.cat !== null ? unit.cat : "-"}</td>
                           <td class="p-1.5 text-center">${unit.exam !== null ? unit.exam : "-"}</td>
-                          <td class="p-1.5 text-center">${unit.total !== null ? unit.total : "-"}</td>
                           <td class="p-1.5 text-center">${unit.grade || "-"}</td>
                         </tr>
                       `).join('')}
                       <tr class="bg-lvtc-yellow font-bold">
                         <td class="p-1.5">Total</td>
-                        <td class="p-1.5 text-center">-</td>
-                        <td class="p-1.5 text-center">-</td>
-                        <td class="p-1.5 text-center">${transcript.courseUnits.reduce((sum, unit) => sum + (unit.total || 0), 0)}</td>
+                        <td class="p-1.5 text-center">${transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0)}</td>
                         <td class="p-1.5 text-center">-</td>
                       </tr>
                     </tbody>
@@ -222,7 +216,7 @@ const Students = () => {
                 <div class="flex items-center bg-gray-100 p-2 rounded mb-4">
                   <div class="font-bold text-lvtc-navy">FINAL GRADE: ${
                     (() => {
-                      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.total || 0), 0);
+                      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
                       for (const scale of [
                         { level: "DISTINCTION", range: "320-400" },
                         { level: "CREDIT", range: "240-319" },

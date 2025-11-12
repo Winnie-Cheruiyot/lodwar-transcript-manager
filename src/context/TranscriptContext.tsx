@@ -332,67 +332,37 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
     const updatedCourseUnits = transcript.courseUnits.map(unit => {
       const unitName = unit.name;
       
-      // Column names that match the Excel template exactly
-      const catKey = `${unitName}_CAT`;
+      // Column name that matches the Excel template exactly
       const examKey = `${unitName}_EXAM`;
-      const totalKey = `${unitName}_TOTAL`;
       
-      console.log(`Checking for ${unitName} marks - CAT: ${row[catKey]}, EXAM: ${row[examKey]}, TOTAL: ${row[totalKey]}`);
+      console.log(`Checking for ${unitName} marks - EXAM: ${row[examKey]}`);
       
       // Get values from Excel (or keep existing for updates)
-      let cat = isUpdate ? unit.cat : null;
       let exam = isUpdate ? unit.exam : null;
-      let total = isUpdate ? unit.total : null;
-      
-      // Process CAT score if present
-      if (row[catKey] !== undefined && row[catKey] !== "" && row[catKey] !== null) {
-        const parsedCat = parseFloat(String(row[catKey]));
-        if (!isNaN(parsedCat) && parsedCat >= 0 && parsedCat <= 30) {
-          cat = parsedCat;
-          console.log(`Set ${unitName} CAT to ${cat}`);
-        }
-      }
       
       // Process EXAM score if present
       if (row[examKey] !== undefined && row[examKey] !== "" && row[examKey] !== null) {
         const parsedExam = parseFloat(String(row[examKey]));
-        if (!isNaN(parsedExam) && parsedExam >= 0 && parsedExam <= 70) {
+        if (!isNaN(parsedExam) && parsedExam >= 0 && parsedExam <= 100) {
           exam = parsedExam;
           console.log(`Set ${unitName} EXAM to ${exam}`);
         }
       }
       
-      // Process TOTAL score if present
-      if (row[totalKey] !== undefined && row[totalKey] !== "" && row[totalKey] !== null) {
-        const parsedTotal = parseFloat(String(row[totalKey]));
-        if (!isNaN(parsedTotal) && parsedTotal >= 0 && parsedTotal <= 100) {
-          total = parsedTotal;
-          console.log(`Set ${unitName} TOTAL to ${total}`);
-        }
-      }
-      
-      // Auto-calculate total if CAT and EXAM are available but total is not
-      if (cat !== null && exam !== null && total === null) {
-        total = cat + exam;
-        console.log(`Auto-calculated ${unitName} TOTAL as ${total}`);
-      }
-      
-      // Calculate grade based on total if available
+      // Calculate grade based on exam if available
       let grade = unit.grade;
-      if (total !== null && total >= 0) {
-        if (total >= 70) grade = "A";
-        else if (total >= 60) grade = "B";
-        else if (total >= 50) grade = "C";
-        else if (total >= 40) grade = "D";
+      if (exam !== null && exam >= 0) {
+        if (exam >= 70) grade = "A";
+        else if (exam >= 60) grade = "B";
+        else if (exam >= 50) grade = "C";
+        else if (exam >= 40) grade = "D";
         else grade = "E";
         console.log(`Calculated grade for ${unitName}: ${grade}`);
       }
 
       return {
         ...unit,
-        cat,
         exam,
-        total,
         grade
       };
     });

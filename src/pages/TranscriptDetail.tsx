@@ -64,18 +64,14 @@ const TranscriptDetail = () => {
 
     type SubjectRow = {
       "Subject": string;
-      "CAT": string;
       "EXAM": string;
-      "TOTAL": string;
       "GRADE": string;
     };
 
     type TotalRow = {
       "Subject": string;
-      "CAT"?: string;
-      "EXAM"?: string;
-      "TOTAL": string;
-      "GRADE"?: string;
+      "EXAM": string;
+      "GRADE": string;
     };
 
     type CommentRow = {
@@ -100,9 +96,7 @@ const TranscriptDetail = () => {
     // Header for subjects
     data.push({
       "Subject": "Subject",
-      "CAT": "CAT",
       "EXAM": "EXAM",
-      "TOTAL": "TOTAL",
       "GRADE": "GRADE"
     });
 
@@ -110,25 +104,21 @@ const TranscriptDetail = () => {
     transcript.courseUnits.forEach(unit => {
       data.push({
         "Subject": unit.name,
-        "CAT": unit.cat !== null ? String(unit.cat) : "",
         "EXAM": unit.exam !== null ? String(unit.exam) : "",
-        "TOTAL": unit.total !== null ? String(unit.total) : "",
         "GRADE": unit.grade || ""
       });
     });
 
     // Calculate total
     const totalPoints = transcript.courseUnits.reduce(
-      (sum, unit) => sum + (unit.total || 0), 0
+      (sum, unit) => sum + (unit.exam || 0), 0
     );
     
     // Add empty row and total row
     data.push({} as EmptyRow);
     data.push({
       "Subject": "TOTAL",
-      "CAT": "",
-      "EXAM": "",
-      "TOTAL": String(totalPoints),
+      "EXAM": String(totalPoints),
       "GRADE": ""
     } as TotalRow);
 

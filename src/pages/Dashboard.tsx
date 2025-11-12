@@ -44,7 +44,7 @@ const Dashboard = () => {
     let passingStudents = 0;
     
     filteredTranscripts.forEach(transcript => {
-      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.total || 0), 0);
+      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
       totalMarks += total;
       
       // Calculate if student passed (total >= 200 based on pass scale)
@@ -66,7 +66,7 @@ const Dashboard = () => {
     
     filteredTranscripts.forEach(transcript => {
       const course = transcript.student.course;
-      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.total || 0), 0);
+      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
       
       if (!courseData[course]) {
         courseData[course] = { totalMarks: 0, count: 0, students: [] };
@@ -105,14 +105,14 @@ const Dashboard = () => {
           subjectData[subjectName] = { totalMarks: 0, count: 0, students: [] };
         }
         
-        if (unit.total !== null) {
-          subjectData[subjectName].totalMarks += unit.total;
+        if (unit.exam !== null) {
+          subjectData[subjectName].totalMarks += unit.exam;
           subjectData[subjectName].count += 1;
           subjectData[subjectName].students.push({
             name: transcript.student.name,
             admissionNumber: transcript.student.admissionNumber,
             course: transcript.student.course,
-            total: unit.total
+            total: unit.exam
           });
         }
       });
@@ -136,7 +136,7 @@ const Dashboard = () => {
         name: transcript.student.name,
         admissionNumber: transcript.student.admissionNumber,
         course: transcript.student.course,
-        total: transcript.courseUnits.reduce((sum, unit) => sum + (unit.total || 0), 0)
+        total: transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0)
       }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 10);
@@ -168,7 +168,7 @@ const Dashboard = () => {
     const levels = { DISTINCTION: 0, CREDIT: 0, PASS: 0, FAIL: 0 };
     
     filteredTranscripts.forEach(transcript => {
-      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.total || 0), 0);
+      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
       
       if (total >= 451) levels.DISTINCTION++;
       else if (total >= 301) levels.CREDIT++;
