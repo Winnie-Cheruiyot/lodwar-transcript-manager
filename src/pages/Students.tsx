@@ -193,21 +193,29 @@ const Students = () => {
                     <thead>
                       <tr class="bg-lvtc-navy text-white">
                         <th class="p-1 text-left">COURSE UNIT</th>
-                        <th class="p-1 text-center">EXAM (100)</th>
+                        <th class="p-1 text-center">CAT (30)</th>
+                        <th class="p-1 text-center">EXAM (70)</th>
+                        <th class="p-1 text-center">TOTAL (100)</th>
                         <th class="p-1 text-center">GRADE</th>
                       </tr>
                     </thead>
                     <tbody>
-                      ${transcript.courseUnits.map((unit, index) => `
+                      ${transcript.courseUnits.map((unit, index) => {
+                        const unitTotal = (unit.cat || 0) + (unit.exam || 0);
+                        return `
                         <tr class="${index % 2 === 0 ? "bg-lvtc-yellow/50" : "bg-white"}">
                           <td class="p-1.5 font-semibold">${unit.name}</td>
+                          <td class="p-1.5 text-center">${unit.cat !== null ? unit.cat : "-"}</td>
                           <td class="p-1.5 text-center">${unit.exam !== null ? unit.exam : "-"}</td>
+                          <td class="p-1.5 text-center">${(unit.cat !== null || unit.exam !== null) ? unitTotal : "-"}</td>
                           <td class="p-1.5 text-center">${unit.grade || "-"}</td>
                         </tr>
-                      `).join('')}
+                      `}).join('')}
                       <tr class="bg-lvtc-yellow font-bold">
                         <td class="p-1.5">Total</td>
-                        <td class="p-1.5 text-center">${transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0)}</td>
+                        <td class="p-1.5 text-center">-</td>
+                        <td class="p-1.5 text-center">-</td>
+                        <td class="p-1.5 text-center">${transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0)}</td>
                         <td class="p-1.5 text-center">-</td>
                       </tr>
                     </tbody>
@@ -215,13 +223,13 @@ const Students = () => {
                 </div>
                 <div class="flex items-center bg-gray-100 p-2 rounded mb-4">
                   <div class="font-bold text-lvtc-navy">FINAL GRADE: ${
-                    (() => {
-                      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
+                   (() => {
+                      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0);
                       for (const scale of [
-                        { level: "DISTINCTION", range: "320-400" },
-                        { level: "CREDIT", range: "240-319" },
-                        { level: "PASS", range: "160-239" },
-                        { level: "FAIL", range: "0-159" }
+                        { level: "DISTINCTION", range: "451-700" },
+                        { level: "CREDIT", range: "301-450" },
+                        { level: "PASS", range: "200-300" },
+                        { level: "FAIL", range: "0-199" }
                       ]) {
                         const [min, max] = scale.range.split('-').map(Number);
                         if (total >= min && total <= max) {
@@ -233,10 +241,10 @@ const Students = () => {
                   }</div>
                   <div class="flex-1 ml-4 flex space-x-4">
                     ${[
-                      { level: "DISTINCTION", range: "320-400" },
-                      { level: "CREDIT", range: "240-319" },
-                      { level: "PASS", range: "160-239" },
-                      { level: "FAIL", range: "0-159" }
+                      { level: "DISTINCTION", range: "451-700" },
+                      { level: "CREDIT", range: "301-450" },
+                      { level: "PASS", range: "200-300" },
+                      { level: "FAIL", range: "0-199" }
                     ].map(scale => `
                       <div class="flex items-center gap-1 text-sm">
                         <span class="font-bold">${scale.level}:</span>
