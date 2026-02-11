@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useTranscript } from "@/context/TranscriptContext";
-import { Transcript, CourseUnit } from "@/types/transcript";
+import { Transcript, CourseUnit, calculateTotal, calculateGrade } from "@/types/transcript";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -68,16 +68,6 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
   const [customCourseUnit, setCustomCourseUnit] = useState<string>("");
   const [isCustomCourseUnit, setIsCustomCourseUnit] = useState(false);
 
-  // Helper function to calculate grade based on exam score
-  const calculateGrade = (exam: number | null): string | null => {
-    if (exam === null) return null;
-    if (exam >= 70) return "A";
-    if (exam >= 60) return "B";
-    if (exam >= 50) return "C";
-    if (exam >= 40) return "D";
-    return "E";
-  };
-
   // Handle student info changes
   const handleStudentChange = (field: keyof typeof editedTranscript.student, value: string) => {
     setEditedTranscript({
@@ -100,9 +90,10 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
       
       const updatedUnit = { ...unit, [field]: value };
       
-      // Auto-calculate grade when EXAM changes
-      if (field === "exam") {
-        updatedUnit.grade = calculateGrade(value as number | null);
+      // Auto-calculate total and grade when CAT or EXAM changes
+      if (field === "cat" || field === "exam") {
+        updatedUnit.total = calculateTotal(updatedUnit.cat, updatedUnit.exam);
+        updatedUnit.grade = calculateGrade(updatedUnit.total);
       }
       
       return updatedUnit;
@@ -139,7 +130,9 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
     const newUnit: CourseUnit = {
       id: Date.now().toString(),
       name: courseUnitName,
+      cat: null,
       exam: null,
+      total: null,
       grade: null
     };
 
@@ -302,7 +295,9 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
                   <thead>
                       <tr className="bg-lvtc-navy text-white">
                         <th className="p-2 text-left">Course Unit</th>
-                        <th className="p-2 text-center">EXAM (100)</th>
+                        <th className="p-2 text-center">CAT (30)</th>
+                        <th className="p-2 text-center">EXAM (70)</th>
+                        <th className="p-2 text-center">TOTAL (100)</th>
                         <th className="p-2 text-center">GRADE</th>
                         <th className="p-2 text-center">Action</th>
                       </tr>
@@ -321,7 +316,21 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
                           <Input
                             type="number"
                             min="0"
-                            max="100"
+                            max="30"
+                            value={unit.cat !== null ? unit.cat : ""}
+                            onChange={(e) => handleCourseUnitChange(
+                              unit.id, 
+                              "cat", 
+                              e.target.value ? Number(e.target.value) : null
+                            )}
+                            className="h-8 text-center"
+                          />
+                        </td>
+                        <td className="p-2 text-center">
+                          <Input
+                            type="number"
+                            min="0"
+                            max="70"
                             value={unit.exam !== null ? unit.exam : ""}
                             onChange={(e) => handleCourseUnitChange(
                               unit.id, 
@@ -333,9 +342,16 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
                         </td>
                         <td className="p-2 text-center">
                           <Input
+                            value={unit.total !== null ? unit.total : ""}
+                            readOnly
+                            className="h-8 text-center bg-gray-100"
+                          />
+                        </td>
+                        <td className="p-2 text-center">
+                          <Input
                             value={unit.grade || ""}
-                            onChange={(e) => handleCourseUnitChange(unit.id, "grade", e.target.value || null)}
-                            className="h-8 text-center"
+                            readOnly
+                            className="h-8 text-center bg-gray-100"
                           />
                         </td>
                         <td className="p-2 text-center">
@@ -374,13 +390,13 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
               </div>
               
               <div className="mt-4 p-2 bg-gray-50 rounded">
-                <p className="text-sm font-semibold mb-1">Grading System:</p>
+                <p className="text-sm font-semibold mb-1">Grading System (based on Total = CAT + EXAM):</p>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
-                  <div>A: 70-100%</div>
-                  <div>B: 60-69%</div>
-                  <div>C: 50-59%</div>
-                  <div>D: 40-49%</div>
-                  <div>E: 0-39%</div>
+                  <div>A: 70-100</div>
+                  <div>B: 60-69</div>
+                  <div>C: 50-59</div>
+                  <div>D: 40-49</div>
+                  <div>E: 0-39</div>
                 </div>
               </div>
             </CardContent>

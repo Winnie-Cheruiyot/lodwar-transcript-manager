@@ -10,18 +10,19 @@ interface TranscriptViewProps {
 const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting = false }) => {
   const calculateTotal = () => {
     let totalPoints = 0;
-    let subjectsWithExam = 0;
+    let subjectsWithMarks = 0;
 
     transcript.courseUnits.forEach(unit => {
-      if (unit.exam !== null) {
-        totalPoints += unit.exam;
-        subjectsWithExam++;
+      const unitTotal = (unit.cat || 0) + (unit.exam || 0);
+      if (unit.cat !== null || unit.exam !== null) {
+        totalPoints += unitTotal;
+        subjectsWithMarks++;
       }
     });
 
     return { 
       total: totalPoints, 
-      average: subjectsWithExam > 0 ? Math.round(totalPoints / subjectsWithExam) : 0
+      average: subjectsWithMarks > 0 ? Math.round(totalPoints / subjectsWithMarks) : 0
     };
   };
 
@@ -39,52 +40,26 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
 
   const passLevel = getPassLevel(stats.total);
   
-  const getAutoRemarks = (level) => {
-    switch(level) {
-      case "DISTINCTION":
-        return "Excellent performance! Student has demonstrated exceptional understanding of course content.";
-      case "CREDIT":
-        return "Good performance! Student has shown strong grasp of course material.";
-      case "PASS":
-        return "Satisfactory performance. Student has met the minimum requirements.";
-      case "FAIL":
-        return "Below required standards. Student needs to improve in most areas.";
-      default:
-        return "Not enough data to generate remarks.";
-    }
-  };
-
   const getManagerComments = (level) => {
     switch(level) {
-      case "DISTINCTION":
-        return "Outstanding performance. Keep up the excellent work!";
-      case "CREDIT":
-        return "Commendable performance. Continue with the good effort.";
-      case "PASS":
-        return "You have passed. Work harder to improve your grades.";
-      case "FAIL":
-        return "You need to put in more effort and seek additional support.";
-      default:
-        return "Please complete all assessments for proper evaluation.";
+      case "DISTINCTION": return "Outstanding performance. Keep up the excellent work!";
+      case "CREDIT": return "Commendable performance. Continue with the good effort.";
+      case "PASS": return "You have passed. Work harder to improve your grades.";
+      case "FAIL": return "You need to put in more effort and seek additional support.";
+      default: return "Please complete all assessments for proper evaluation.";
     }
   };
 
   const getHodComments = (level) => {
     switch(level) {
-      case "DISTINCTION":
-        return "Exceptional results. Student shows great potential in this field.";
-      case "CREDIT":
-        return "Good results. Student demonstrates solid understanding of the subject.";
-      case "PASS":
-        return "Acceptable results. Student should focus on improving weak areas.";
-      case "FAIL":
-        return "Student requires remedial work and closer supervision.";
-      default:
-        return "Incomplete assessment. Unable to provide comprehensive feedback.";
+      case "DISTINCTION": return "Exceptional results. Student shows great potential in this field.";
+      case "CREDIT": return "Good results. Student demonstrates solid understanding of the subject.";
+      case "PASS": return "Acceptable results. Student should focus on improving weak areas.";
+      case "FAIL": return "Student requires remedial work and closer supervision.";
+      default: return "Incomplete assessment. Unable to provide comprehensive feedback.";
     }
   };
 
-  // Use existing remarks if available, otherwise use auto-generated ones
   const managerComments = transcript.managerComments || getManagerComments(passLevel);
   const hodComments = transcript.hodComments || getHodComments(passLevel);
 
@@ -112,31 +87,22 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           </div>
         </div>
 
-        {/* School Logo and Name - Center aligned */}
+        {/* School Logo and Name */}
         <div className="flex items-center justify-center py-2">
-          <img 
-            src={logo} 
-            alt="Lodwar VTC Logo" 
-            className="w-16 h-16 object-contain mr-3" 
-          />
+          <img src={logo} alt="Lodwar VTC Logo" className="w-16 h-16 object-contain mr-3" />
           <div className="text-white text-center">
-            <h1 className="text-xl font-bold mb-0 uppercase tracking-wide">
-              Lodwar Vocational Training
-            </h1>
-            <h1 className="text-xl font-bold uppercase tracking-wide">
-              Centre
-            </h1>
+            <h1 className="text-xl font-bold mb-0 uppercase tracking-wide">Lodwar Vocational Training</h1>
+            <h1 className="text-xl font-bold uppercase tracking-wide">Centre</h1>
           </div>
         </div>
 
-        {/* Transcript Title */}
         <div className="text-center bg-lvtc-navy py-1">
           <h2 className="text-lg font-bold uppercase">TRANSCRIPT</h2>
         </div>
       </div>
 
       <div className="p-4 bg-white">
-        {/* Student Information - Inline layout */}
+        {/* Student Information */}
         <div className="flex flex-wrap mb-3 border-b pb-2 border-gray-300">
           <div className="w-1/2 flex items-center mb-1">
             <span className="font-bold text-lvtc-navy mr-1">Name:</span>
@@ -156,29 +122,35 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           </div>
         </div>
 
-        {/* Grades Table with minimized grading scale */}
+        {/* Grades Table */}
         <div className="mb-2">
           <table className="w-full border-collapse">
             <thead>
               <tr className="bg-lvtc-navy text-white">
                 <th className="p-1 text-left">COURSE UNIT</th>
-                <th className="p-1 text-center">EXAM (100)</th>
+                <th className="p-1 text-center">CAT (30)</th>
+                <th className="p-1 text-center">EXAM (70)</th>
+                <th className="p-1 text-center">TOTAL (100)</th>
                 <th className="p-1 text-center">GRADE</th>
               </tr>
             </thead>
             <tbody>
-              {transcript.courseUnits.map((unit, index) => (
-                <tr 
-                  key={unit.id} 
-                  className={index % 2 === 0 ? "bg-lvtc-yellow/50" : "bg-white"}
-                >
-                  <td className="p-1.5 font-semibold">{unit.name}</td>
-                  <td className="p-1.5 text-center">{unit.exam !== null ? unit.exam : "-"}</td>
-                  <td className="p-1.5 text-center">{unit.grade || "-"}</td>
-                </tr>
-              ))}
+              {transcript.courseUnits.map((unit, index) => {
+                const unitTotal = (unit.cat || 0) + (unit.exam || 0);
+                return (
+                  <tr key={unit.id} className={index % 2 === 0 ? "bg-lvtc-yellow/50" : "bg-white"}>
+                    <td className="p-1.5 font-semibold">{unit.name}</td>
+                    <td className="p-1.5 text-center">{unit.cat !== null ? unit.cat : "-"}</td>
+                    <td className="p-1.5 text-center">{unit.exam !== null ? unit.exam : "-"}</td>
+                    <td className="p-1.5 text-center">{(unit.cat !== null || unit.exam !== null) ? unitTotal : "-"}</td>
+                    <td className="p-1.5 text-center">{unit.grade || "-"}</td>
+                  </tr>
+                );
+              })}
               <tr className="bg-lvtc-yellow font-bold">
                 <td className="p-1.5">Total</td>
+                <td className="p-1.5 text-center">-</td>
+                <td className="p-1.5 text-center">-</td>
                 <td className="p-1.5 text-center">{stats.total}</td>
                 <td className="p-1.5 text-center">-</td>
               </tr>
@@ -186,7 +158,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           </table>
         </div>
 
-        {/* Final Grade and Grading Scale - Split layout */}
+        {/* Final Grade and Pass Scales */}
         <div className="flex justify-between items-start bg-gray-100 p-2 rounded mb-2 gap-4">
           <div className="font-bold text-lvtc-navy flex items-center gap-2">
             FINAL GRADE: <span className="text-black text-lg">{passLevel}</span>
@@ -219,9 +191,8 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           </div>
         </div>
 
-        {/* Comments and Info Section - Improved layout with more space */}
+        {/* Comments and Info Section */}
         <div className="grid grid-cols-3 gap-3">
-          {/* Manager Comments */}
           <div className="bg-lvtc-yellow/60 p-3 rounded">
             <div className="uppercase font-bold mb-2 text-center">Manager Comments:</div>
             <div className="min-h-[85px] text-sm">{managerComments}</div>
@@ -231,7 +202,6 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
             </div>
           </div>
 
-          {/* Information Column - With Fee Balance and Dates */}
           <div className="bg-lvtc-yellow/60 p-3 rounded flex flex-col justify-between">
             <div className="space-y-4">
               <div>
@@ -249,7 +219,6 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
             </div>
           </div>
 
-          {/* HOD Comments */}
           <div className="bg-lvtc-yellow/60 p-3 rounded">
             <div className="uppercase font-bold mb-2 text-center">H.O.D Comments:</div>
             <div className="min-h-[85px] text-sm">{hodComments}</div>
@@ -259,7 +228,6 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           </div>
         </div>
         
-        {/* Footer with Copyright */}
         <div className="mt-3 text-center text-xs text-gray-600 border-t pt-2">
           <p>&copy; Examination Department @ 2025 LVTC. All Rights Reserved.</p>
         </div>
@@ -268,19 +236,9 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
       <style>
         {`
           @media print {
-            @page {
-              size: A4 portrait;
-              margin: 0.5cm;
-            }
-            body {
-              margin: 0;
-              padding: 0;
-            }
-            .print-container {
-              width: 100%;
-              height: 100%;
-              page-break-after: always;
-            }
+            @page { size: A4 portrait; margin: 0.5cm; }
+            body { margin: 0; padding: 0; }
+            .print-container { width: 100%; height: 100%; page-break-after: always; }
           }
         `}
       </style>

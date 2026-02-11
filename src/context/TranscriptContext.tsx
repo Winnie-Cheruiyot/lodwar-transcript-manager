@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Transcript, Student, CourseUnit, defaultCourseUnits } from "@/types/transcript";
+import { Transcript, Student, CourseUnit, defaultCourseUnits, calculateTotal, calculateGrade } from "@/types/transcript";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
@@ -39,21 +39,13 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
   const [students, setStudents] = useState<Student[]>([]);
   const [currentTranscript, setCurrentTranscript] = useState<Transcript | null>(null);
 
-  // Load data from localStorage on initial render
   useEffect(() => {
     const storedTranscripts = localStorage.getItem("transcripts");
     const storedStudents = localStorage.getItem("students");
-
-    if (storedTranscripts) {
-      setTranscripts(JSON.parse(storedTranscripts));
-    }
-
-    if (storedStudents) {
-      setStudents(JSON.parse(storedStudents));
-    }
+    if (storedTranscripts) setTranscripts(JSON.parse(storedTranscripts));
+    if (storedStudents) setStudents(JSON.parse(storedStudents));
   }, []);
 
-  // Save data to localStorage whenever it changes
   useEffect(() => {
     localStorage.setItem("transcripts", JSON.stringify(transcripts));
   }, [transcripts]);
@@ -68,9 +60,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
   };
 
   const updateTranscript = (transcript: Transcript) => {
-    setTranscripts((prev) =>
-      prev.map((t) => (t.id === transcript.id ? transcript : t))
-    );
+    setTranscripts((prev) => prev.map((t) => (t.id === transcript.id ? transcript : t)));
     toast.success("Transcript updated successfully");
   };
 
@@ -111,25 +101,17 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
 
   const updateStudent = (student: Student) => {
     setStudents((prev) => prev.map((s) => (s.id === student.id ? student : s)));
-    
-    // Also update the student info in their transcript
     setTranscripts((prev) =>
-      prev.map((t) =>
-        t.id === student.transcriptId ? { ...t, student } : t
-      )
+      prev.map((t) => (t.id === student.transcriptId ? { ...t, student } : t))
     );
-    
     toast.success("Student updated successfully");
   };
 
   const deleteStudent = (id: string) => {
     const studentToDelete = students.find((s) => s.id === id);
     if (studentToDelete) {
-      setTranscripts((prev) => 
-        prev.filter((t) => t.id !== studentToDelete.transcriptId)
-      );
+      setTranscripts((prev) => prev.filter((t) => t.id !== studentToDelete.transcriptId));
     }
-    
     setStudents((prev) => prev.filter((s) => s.id !== id));
     toast.success("Student deleted successfully");
   };
@@ -137,7 +119,6 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
   const getStudentTranscript = (studentId: string) => {
     const student = students.find((s) => s.id === studentId);
     if (!student) return null;
-    
     return transcripts.find((t) => t.id === student.transcriptId) || null;
   };
 
@@ -159,8 +140,6 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
           const jsonData = XLSX.utils.sheet_to_json(sheet, { raw: false });
 
           console.log("Excel import - Raw data:", jsonData);
-          
-          // Process data
           const { studentsAdded, studentsUpdated } = processExcelData(jsonData);
           
           if (studentsAdded + studentsUpdated > 0) {
@@ -190,62 +169,43 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
     let studentsAdded = 0;
     let studentsUpdated = 0;
     
-    console.log(`Processing ${data.length} rows from Excel`);
-    
     if (!Array.isArray(data) || data.length === 0) {
-      console.error("No data found in Excel file or invalid format");
       throw new Error("Invalid Excel format");
     }
     
-    // Filter out empty rows and header/instruction rows more carefully
     const validRows = data.filter((row, index) => {
-      // Skip first few rows if they contain headers or instructions
       if (index === 0) {
-        // Check if this is a header row
         const hasHeaderText = Object.values(row).some(value => 
           typeof value === 'string' && 
           (value.includes('REQUIRED') || value.includes('Full student name') || value === 'name')
         );
-        if (hasHeaderText) {
-          console.log("Skipping header row");
-          return false;
-        }
+        if (hasHeaderText) return false;
       }
       
-      // Check for required fields - be more flexible with data types
       const name = row.name || row.Name || row.NAME;
       const admissionNumber = row.admissionNumber || row['Admission Number'] || row.ADMISSION_NUMBER;
       const course = row.course || row.Course || row.COURSE;
       
       const hasRequiredFields = name && admissionNumber && course;
-      
-      // Also check that these aren't instruction text
       const isInstructionRow = typeof name === 'string' && (
-        name.includes('REQUIRED') || 
-        name.includes('Full student name') ||
-        name.includes('John Doe') ||
-        name === ''
+        name.includes('REQUIRED') || name.includes('Full student name') ||
+        name.includes('John Doe') || name === ''
       );
-      
-      console.log(`Row ${index} - name: ${name}, admissionNumber: ${admissionNumber}, course: ${course}, valid: ${hasRequiredFields && !isInstructionRow}`);
       
       return hasRequiredFields && !isInstructionRow;
     });
     
-    console.log(`Found ${validRows.length} valid rows with required fields`);
-    
     if (validRows.length === 0) {
-      throw new Error("No valid data rows found in the Excel file. Please check the template format.");
+      throw new Error("No valid data rows found in the Excel file.");
     }
 
     validRows.forEach((row, index) => {
       try {
-        // Normalize field names to handle variations
-        const normalizedRow = {
+        const normalizedRow: any = {
           name: row.name || row.Name || row.NAME || '',
           admissionNumber: row.admissionNumber || row['Admission Number'] || row.ADMISSION_NUMBER || '',
           course: row.course || row.Course || row.COURSE || '',
-          schoolYear: row.schoolYear || row['School Year'] || row.SCHOOL_YEAR || row.schoolYear || '',
+          schoolYear: row.schoolYear || row['School Year'] || row.SCHOOL_YEAR || '',
           closingDay: row.closingDay || row['Closing Day'] || row.CLOSING_DAY || '',
           openingDay: row.openingDay || row['Opening Day'] || row.OPENING_DAY || '',
           feeBalance: row.feeBalance || row['Fee Balance'] || row.FEE_BALANCE || '',
@@ -254,35 +214,25 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
           hodName: row.hodName || row['HOD Name'] || row.HOD_NAME || ''
         };
 
-        // Add all the subject columns
         defaultCourseUnits.forEach(unit => {
           const unitName = unit.name;
           normalizedRow[`${unitName}_CAT`] = row[`${unitName}_CAT`];
           normalizedRow[`${unitName}_EXAM`] = row[`${unitName}_EXAM`];
-          normalizedRow[`${unitName}_TOTAL`] = row[`${unitName}_TOTAL`];
         });
 
-        console.log(`Processing student ${index + 1}:`, normalizedRow.name);
-
-        // Check for existing student by admission number
         const existingStudent = students.find(
           (s) => s.admissionNumber === normalizedRow.admissionNumber
         );
 
         if (existingStudent) {
-          // Update existing student's transcript
           const existingTranscript = transcripts.find(
             (t) => t.id === existingStudent.transcriptId
           );
-          
           if (existingTranscript) {
-            console.log(`Updating existing student: ${existingStudent.name} (${existingStudent.admissionNumber})`);
             processTranscriptData(existingTranscript, normalizedRow, true);
             studentsUpdated++;
           }
         } else {
-          // Create new student
-          console.log(`Adding new student: ${normalizedRow.name} (${normalizedRow.admissionNumber})`);
           const newStudent = addStudent({
             name: normalizedRow.name,
             admissionNumber: normalizedRow.admissionNumber,
@@ -290,26 +240,20 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
             schoolYear: normalizedRow.schoolYear
           });
 
-          // Wait for state to update, then get the transcript and update with data
           const findTranscriptInStorage = (id: string) => {
             try {
               const stored = localStorage.getItem("transcripts");
               if (!stored) return null;
               const arr = JSON.parse(stored) as Transcript[];
               return arr.find(t => t.id === id) || null;
-            } catch {
-              return null;
-            }
+            } catch { return null; }
           };
           const attemptProcess = (retries = 0) => {
             const newTranscript = findTranscriptInStorage(newStudent.transcriptId);
             if (newTranscript) {
               processTranscriptData(newTranscript, normalizedRow, false);
-              console.log(`Successfully processed new student: ${newStudent.name}`);
             } else if (retries < 20) {
               setTimeout(() => attemptProcess(retries + 1), 100);
-            } else {
-              console.warn(`Timed out waiting for transcript for ${newStudent.name}`);
             }
           };
           attemptProcess();
@@ -317,57 +261,41 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
         }
       } catch (rowError) {
         console.error(`Error processing row ${index}:`, rowError);
-        // Continue with other rows instead of failing completely
       }
     });
 
     return { studentsAdded, studentsUpdated };
   };
 
-  // Helper function to process transcript data from Excel row
   const processTranscriptData = (transcript: Transcript, row: any, isUpdate: boolean) => {
-    console.log(`Processing transcript data for ${transcript.student.name}`);
-    
-    // Process course units
     const updatedCourseUnits = transcript.courseUnits.map(unit => {
       const unitName = unit.name;
-      
-      // Column name that matches the Excel template exactly
+      const catKey = `${unitName}_CAT`;
       const examKey = `${unitName}_EXAM`;
       
-      console.log(`Checking for ${unitName} marks - EXAM: ${row[examKey]}`);
+      let cat = isUpdate ? (unit.cat ?? null) : null;
+      let exam = isUpdate ? (unit.exam ?? null) : null;
       
-      // Get values from Excel (or keep existing for updates)
-      let exam = isUpdate ? unit.exam : null;
-      
-      // Process EXAM score if present
-      if (row[examKey] !== undefined && row[examKey] !== "" && row[examKey] !== null) {
-        const parsedExam = parseFloat(String(row[examKey]));
-        if (!isNaN(parsedExam) && parsedExam >= 0 && parsedExam <= 100) {
-          exam = parsedExam;
-          console.log(`Set ${unitName} EXAM to ${exam}`);
+      if (row[catKey] !== undefined && row[catKey] !== "" && row[catKey] !== null) {
+        const parsedCat = parseFloat(String(row[catKey]));
+        if (!isNaN(parsedCat) && parsedCat >= 0 && parsedCat <= 30) {
+          cat = parsedCat;
         }
       }
       
-      // Calculate grade based on exam if available
-      let grade = unit.grade;
-      if (exam !== null && exam >= 0) {
-        if (exam >= 70) grade = "A";
-        else if (exam >= 60) grade = "B";
-        else if (exam >= 50) grade = "C";
-        else if (exam >= 40) grade = "D";
-        else grade = "E";
-        console.log(`Calculated grade for ${unitName}: ${grade}`);
+      if (row[examKey] !== undefined && row[examKey] !== "" && row[examKey] !== null) {
+        const parsedExam = parseFloat(String(row[examKey]));
+        if (!isNaN(parsedExam) && parsedExam >= 0 && parsedExam <= 70) {
+          exam = parsedExam;
+        }
       }
+      
+      const total = calculateTotal(cat, exam);
+      const grade = calculateGrade(total);
 
-      return {
-        ...unit,
-        exam,
-        grade
-      };
+      return { ...unit, cat, exam, total, grade };
     });
 
-    // Update additional fields
     const updatedTranscript = {
       ...transcript,
       courseUnits: updatedCourseUnits,
@@ -378,13 +306,9 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
       hodComments: row.hodComments || transcript.hodComments,
       hodName: row.hodName || transcript.hodName,
     };
-    
-    console.log(`Additional fields updated - closingDay: ${updatedTranscript.closingDay}, openingDay: ${updatedTranscript.openingDay}, feeBalance: ${updatedTranscript.feeBalance}`);
 
-    // Update the transcript in state
     updateTranscript(updatedTranscript);
     
-    // Also update student info if needed
     if (isUpdate && (row.name || row.course || row.schoolYear)) {
       const updatedStudent = {
         ...transcript.student,
@@ -392,7 +316,6 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
         course: row.course || transcript.student.course,
         schoolYear: row.schoolYear || transcript.student.schoolYear,
       };
-
       updateStudent(updatedStudent);
     }
   };
@@ -400,18 +323,10 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
   return (
     <TranscriptContext.Provider
       value={{
-        transcripts,
-        students,
-        currentTranscript,
-        setCurrentTranscript,
-        addTranscript,
-        updateTranscript,
-        deleteTranscript,
-        addStudent,
-        updateStudent,
-        deleteStudent,
-        getStudentTranscript,
-        importFromExcel,
+        transcripts, students, currentTranscript, setCurrentTranscript,
+        addTranscript, updateTranscript, deleteTranscript,
+        addStudent, updateStudent, deleteStudent,
+        getStudentTranscript, importFromExcel,
       }}
     >
       {children}
