@@ -136,7 +136,7 @@ const Dashboard = () => {
         name: transcript.student.name,
         admissionNumber: transcript.student.admissionNumber,
         course: transcript.student.course,
-        total: transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0)
+        total: transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0)
       }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 10);
