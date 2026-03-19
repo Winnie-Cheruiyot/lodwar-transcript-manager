@@ -216,7 +216,7 @@ const Students = () => {
                 <div class="flex items-center bg-gray-100 p-2 rounded mb-4">
                   <div class="font-bold text-lvtc-navy">FINAL GRADE: ${
                    (() => {
-                      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0);
+                      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
                       for (const scale of [
                         { level: "DISTINCTION", range: "451-700" },
                         { level: "CREDIT", range: "301-450" },

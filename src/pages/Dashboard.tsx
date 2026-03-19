@@ -168,7 +168,7 @@ const Dashboard = () => {
     const levels = { DISTINCTION: 0, CREDIT: 0, PASS: 0, FAIL: 0 };
     
     filteredTranscripts.forEach(transcript => {
-      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0);
+      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
       
       if (total >= 451) levels.DISTINCTION++;
       else if (total >= 301) levels.CREDIT++;
