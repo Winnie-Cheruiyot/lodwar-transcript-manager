@@ -11,9 +11,7 @@ export interface Student {
 export interface CourseUnit {
   id: string;
   name: string;
-  cat: number | null;
   exam: number | null;
-  total: number | null;
   grade: string | null;
 }
 
@@ -52,25 +50,20 @@ export const passScales = [
 ];
 
 export const defaultCourseUnits: CourseUnit[] = [
-  { id: '1', name: 'TRADE THEORY', cat: null, exam: null, total: null, grade: null },
-  { id: '2', name: 'TRADE PRACTICE', cat: null, exam: null, total: null, grade: null },
-  { id: '3', name: 'COMMUNICATION SKILLS', cat: null, exam: null, total: null, grade: null },
-  { id: '4', name: 'ENTREPRENEURSHIP', cat: null, exam: null, total: null, grade: null },
-  { id: '5', name: 'MATHEMATICS', cat: null, exam: null, total: null, grade: null },
-  { id: '6', name: 'GENERAL SCIENCE', cat: null, exam: null, total: null, grade: null },
-  { id: '7', name: 'DIGITAL LITERACY', cat: null, exam: null, total: null, grade: null },
+  { id: '1', name: 'TRADE THEORY', exam: null, grade: null },
+  { id: '2', name: 'TRADE PRACTICE', exam: null, grade: null },
+  { id: '3', name: 'COMMUNICATION SKILLS', exam: null, grade: null },
+  { id: '4', name: 'ENTREPRENEURSHIP', exam: null, grade: null },
+  { id: '5', name: 'MATHEMATICS', exam: null, grade: null },
+  { id: '6', name: 'GENERAL SCIENCE', exam: null, grade: null },
+  { id: '7', name: 'DIGITAL LITERACY', exam: null, grade: null },
 ];
 
-export const calculateTotal = (cat: number | null, exam: number | null): number | null => {
-  if (cat === null && exam === null) return null;
-  return (cat || 0) + (exam || 0);
-};
-
-export const calculateGrade = (total: number | null): string | null => {
-  if (total === null) return null;
-  if (total >= 70) return "A";
-  if (total >= 60) return "B";
-  if (total >= 50) return "C";
-  if (total >= 40) return "D";
+export const calculateGrade = (exam: number | null): string | null => {
+  if (exam === null) return null;
+  if (exam >= 70) return "A";
+  if (exam >= 60) return "B";
+  if (exam >= 50) return "C";
+  if (exam >= 40) return "D";
   return "E";
 };

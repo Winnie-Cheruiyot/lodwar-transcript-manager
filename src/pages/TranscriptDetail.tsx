@@ -45,33 +45,30 @@ const TranscriptDetail = () => {
       "Term & Year": student.schoolYear
     });
     data.push({});
-    data.push({ "Subject": "Subject", "CAT (30)": "CAT", "EXAM (70)": "EXAM", "TOTAL (100)": "TOTAL", "GRADE": "GRADE" });
+    data.push({ "Subject": "Subject", "EXAM (100)": "EXAM", "GRADE": "GRADE" });
 
     transcript.courseUnits.forEach(unit => {
-      const total = (unit.cat || 0) + (unit.exam || 0);
       data.push({
         "Subject": unit.name,
-        "CAT (30)": unit.cat !== null ? String(unit.cat) : "",
-        "EXAM (70)": unit.exam !== null ? String(unit.exam) : "",
-        "TOTAL (100)": (unit.cat !== null || unit.exam !== null) ? String(total) : "",
+        "EXAM (100)": unit.exam !== null ? String(unit.exam) : "",
         "GRADE": unit.grade || ""
       });
     });
 
     const grandTotal = transcript.courseUnits.reduce(
-      (sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0
+      (sum, unit) => sum + (unit.exam || 0), 0
     );
     
     data.push({});
-    data.push({ "Subject": "GRAND TOTAL", "TOTAL (100)": String(grandTotal) });
+    data.push({ "Subject": "GRAND TOTAL", "EXAM (100)": String(grandTotal) });
     data.push({});
-    data.push({ "Subject": "Manager Comments", "CAT (30)": transcript.managerComments });
-    data.push({ "Subject": "HOD Comments", "CAT (30)": transcript.hodComments });
-    if (transcript.hodName) data.push({ "Subject": "HOD Name", "CAT (30)": transcript.hodName });
+    data.push({ "Subject": "Manager Comments", "EXAM (100)": transcript.managerComments });
+    data.push({ "Subject": "HOD Comments", "EXAM (100)": transcript.hodComments });
+    if (transcript.hodName) data.push({ "Subject": "HOD Name", "EXAM (100)": transcript.hodName });
     data.push({});
-    data.push({ "Subject": "Closing Day", "CAT (30)": transcript.closingDay });
-    data.push({ "Subject": "Opening Day", "CAT (30)": transcript.openingDay });
-    data.push({ "Subject": "Fee Balance", "CAT (30)": transcript.feeBalance });
+    data.push({ "Subject": "Closing Day", "EXAM (100)": transcript.closingDay });
+    data.push({ "Subject": "Opening Day", "EXAM (100)": transcript.openingDay });
+    data.push({ "Subject": "Fee Balance", "EXAM (100)": transcript.feeBalance });
     data.push({});
     data.push({ "Subject": "© Examination department@2025 LVTC" });
 

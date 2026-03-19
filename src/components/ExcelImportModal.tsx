@@ -55,7 +55,7 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
     
     const headers = ["name", "admissionNumber", "course", "schoolYear"];
     defaultCourseUnits.forEach(unit => {
-      headers.push(`${unit.name}_CAT`, `${unit.name}_EXAM`);
+      headers.push(`${unit.name}_EXAM`);
     });
     headers.push("closingDay", "openingDay", "feeBalance", "managerComments", "hodComments", "hodName");
     
@@ -63,13 +63,13 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
       "REQUIRED: Full student name", "REQUIRED: Unique ID", "REQUIRED: E.g. Electrical Installation", "E.g. 2024",
     ];
     defaultCourseUnits.forEach(() => {
-      explanations.push("CAT marks (max 30)", "Exam marks (max 70)");
+      explanations.push("Exam marks (max 100)");
     });
     explanations.push("School closing date", "School opening date", "Outstanding fees amount", "Manager's comments", "HOD's comments", "Full HOD name");
     
     const sampleRow = ["John Doe", "ADM/2024/001", "Electrical Installation", "2024"];
     defaultCourseUnits.forEach(() => {
-      sampleRow.push("25", "55");
+      sampleRow.push("75");
     });
     sampleRow.push("December 15, 2024", "January 10, 2025", "10000", "Good progress overall", "Excellent performance in practical", "Mr. John Smith");
     
@@ -86,8 +86,8 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
       ["3. The third row is a sample data row and can be deleted"],
       ["4. Each row represents one student record"],
       ["5. Required fields: name, admissionNumber, and course"],
-      ["6. Subject columns: SUBJECTNAME_CAT (out of 30), SUBJECTNAME_EXAM (out of 70)"],
-      ["7. Total and Grade are auto-calculated from CAT + EXAM"],
+      ["6. Subject columns: SUBJECTNAME_EXAM (out of 100)"],
+      ["7. Grade is auto-calculated from EXAM marks"],
       [""],
       ["Available subjects:"],
       ...defaultCourseUnits.map(unit => [`- ${unit.name}`])
@@ -135,10 +135,9 @@ const ExcelImportModal: React.FC<ExcelImportModalProps> = ({ isOpen, onClose }) 
                   <div>
                     <p className="font-medium mb-1">Grade columns structure:</p>
                     <ul className="list-disc pl-5 space-y-1 mb-2">
-                      <li><strong>SUBJECT_CAT</strong> - CAT marks out of 30 (e.g., MATHEMATICS_CAT)</li>
-                      <li><strong>SUBJECT_EXAM</strong> - Exam marks out of 70 (e.g., MATHEMATICS_EXAM)</li>
+                      <li><strong>SUBJECT_EXAM</strong> - Exam marks out of 100 (e.g., MATHEMATICS_EXAM)</li>
                     </ul>
-                    <p className="text-xs text-gray-400">Total (CAT + EXAM) and Grade are auto-calculated</p>
+                    <p className="text-xs text-gray-400">Grade is auto-calculated from exam marks</p>
                   </div>
                   <div>
                     <p className="font-medium mb-1">Other columns:</p>

@@ -1,7 +1,7 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { Transcript, Student, CourseUnit, defaultCourseUnits, calculateTotal, calculateGrade } from "@/types/transcript";
+import { Transcript, Student, CourseUnit, defaultCourseUnits, calculateGrade } from "@/types/transcript";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 
@@ -216,7 +216,6 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
 
         defaultCourseUnits.forEach(unit => {
           const unitName = unit.name;
-          normalizedRow[`${unitName}_CAT`] = row[`${unitName}_CAT`];
           normalizedRow[`${unitName}_EXAM`] = row[`${unitName}_EXAM`];
         });
 
@@ -270,30 +269,20 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
   const processTranscriptData = (transcript: Transcript, row: any, isUpdate: boolean) => {
     const updatedCourseUnits = transcript.courseUnits.map(unit => {
       const unitName = unit.name;
-      const catKey = `${unitName}_CAT`;
       const examKey = `${unitName}_EXAM`;
       
-      let cat = isUpdate ? (unit.cat ?? null) : null;
       let exam = isUpdate ? (unit.exam ?? null) : null;
-      
-      if (row[catKey] !== undefined && row[catKey] !== "" && row[catKey] !== null) {
-        const parsedCat = parseFloat(String(row[catKey]));
-        if (!isNaN(parsedCat) && parsedCat >= 0 && parsedCat <= 30) {
-          cat = parsedCat;
-        }
-      }
       
       if (row[examKey] !== undefined && row[examKey] !== "" && row[examKey] !== null) {
         const parsedExam = parseFloat(String(row[examKey]));
-        if (!isNaN(parsedExam) && parsedExam >= 0 && parsedExam <= 70) {
+        if (!isNaN(parsedExam) && parsedExam >= 0 && parsedExam <= 100) {
           exam = parsedExam;
         }
       }
       
-      const total = calculateTotal(cat, exam);
-      const grade = calculateGrade(total);
+      const grade = calculateGrade(exam);
 
-      return { ...unit, cat, exam, total, grade };
+      return { ...unit, exam, grade };
     });
 
     const updatedTranscript = {

@@ -13,9 +13,8 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
     let subjectsWithMarks = 0;
 
     transcript.courseUnits.forEach(unit => {
-      const unitTotal = (unit.cat || 0) + (unit.exam || 0);
-      if (unit.cat !== null || unit.exam !== null) {
-        totalPoints += unitTotal;
+      if (unit.exam !== null) {
+        totalPoints += unit.exam;
         subjectsWithMarks++;
       }
     });
@@ -128,29 +127,20 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
             <thead>
               <tr className="bg-lvtc-navy text-white">
                 <th className="p-1 text-left">COURSE UNIT</th>
-                <th className="p-1 text-center">CAT (30)</th>
-                <th className="p-1 text-center">EXAM (70)</th>
-                <th className="p-1 text-center">TOTAL (100)</th>
+                <th className="p-1 text-center">EXAM (100)</th>
                 <th className="p-1 text-center">GRADE</th>
               </tr>
             </thead>
             <tbody>
-              {transcript.courseUnits.map((unit, index) => {
-                const unitTotal = (unit.cat || 0) + (unit.exam || 0);
-                return (
-                  <tr key={unit.id} className={index % 2 === 0 ? "bg-lvtc-yellow/50" : "bg-white"}>
-                    <td className="p-1.5 font-semibold">{unit.name}</td>
-                    <td className="p-1.5 text-center">{unit.cat !== null ? unit.cat : "-"}</td>
-                    <td className="p-1.5 text-center">{unit.exam !== null ? unit.exam : "-"}</td>
-                    <td className="p-1.5 text-center">{(unit.cat !== null || unit.exam !== null) ? unitTotal : "-"}</td>
-                    <td className="p-1.5 text-center">{unit.grade || "-"}</td>
-                  </tr>
-                );
-              })}
+              {transcript.courseUnits.map((unit, index) => (
+                <tr key={unit.id} className={index % 2 === 0 ? "bg-lvtc-yellow/50" : "bg-white"}>
+                  <td className="p-1.5 font-semibold">{unit.name}</td>
+                  <td className="p-1.5 text-center">{unit.exam !== null ? unit.exam : "-"}</td>
+                  <td className="p-1.5 text-center">{unit.grade || "-"}</td>
+                </tr>
+              ))}
               <tr className="bg-lvtc-yellow font-bold">
                 <td className="p-1.5">Total</td>
-                <td className="p-1.5 text-center">-</td>
-                <td className="p-1.5 text-center">-</td>
                 <td className="p-1.5 text-center">{stats.total}</td>
                 <td className="p-1.5 text-center">-</td>
               </tr>
