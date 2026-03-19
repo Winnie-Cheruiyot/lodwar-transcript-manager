@@ -198,22 +198,16 @@ const Students = () => {
                        </tr>
                     </thead>
                     <tbody>
-                      ${transcript.courseUnits.map((unit, index) => {
-                        const unitTotal = (unit.cat || 0) + (unit.exam || 0);
-                        return `
+                      ${transcript.courseUnits.map((unit, index) => `
                         <tr class="${index % 2 === 0 ? "bg-lvtc-yellow/50" : "bg-white"}">
                           <td class="p-1.5 font-semibold">${unit.name}</td>
-                          <td class="p-1.5 text-center">${unit.cat !== null ? unit.cat : "-"}</td>
                           <td class="p-1.5 text-center">${unit.exam !== null ? unit.exam : "-"}</td>
-                          <td class="p-1.5 text-center">${(unit.cat !== null || unit.exam !== null) ? unitTotal : "-"}</td>
                           <td class="p-1.5 text-center">${unit.grade || "-"}</td>
                         </tr>
-                      `}).join('')}
+                      `).join('')}
                       <tr class="bg-lvtc-yellow font-bold">
                         <td class="p-1.5">Total</td>
-                        <td class="p-1.5 text-center">-</td>
-                        <td class="p-1.5 text-center">-</td>
-                        <td class="p-1.5 text-center">${transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0)}</td>
+                        <td class="p-1.5 text-center">${transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0)}</td>
                         <td class="p-1.5 text-center">-</td>
                       </tr>
                     </tbody>
