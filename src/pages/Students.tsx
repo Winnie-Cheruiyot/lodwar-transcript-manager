@@ -191,13 +191,11 @@ const Students = () => {
                 <div class="mb-4">
                   <table class="w-full border-collapse">
                     <thead>
-                      <tr class="bg-lvtc-navy text-white">
-                        <th class="p-1 text-left">COURSE UNIT</th>
-                        <th class="p-1 text-center">CAT (30)</th>
-                        <th class="p-1 text-center">EXAM (70)</th>
-                        <th class="p-1 text-center">TOTAL (100)</th>
-                        <th class="p-1 text-center">GRADE</th>
-                      </tr>
+                       <tr class="bg-lvtc-navy text-white">
+                         <th class="p-1 text-left">COURSE UNIT</th>
+                         <th class="p-1 text-center">EXAM (100)</th>
+                         <th class="p-1 text-center">GRADE</th>
+                       </tr>
                     </thead>
                     <tbody>
                       ${transcript.courseUnits.map((unit, index) => {
