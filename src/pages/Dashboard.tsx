@@ -44,7 +44,7 @@ const Dashboard = () => {
     let passingStudents = 0;
     
     filteredTranscripts.forEach(transcript => {
-      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0);
+      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
       totalMarks += total;
       
       if (total >= 200) passingStudents++;
