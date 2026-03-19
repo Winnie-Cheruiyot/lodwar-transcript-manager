@@ -44,7 +44,7 @@ const Dashboard = () => {
     let passingStudents = 0;
     
     filteredTranscripts.forEach(transcript => {
-      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0);
+      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
       totalMarks += total;
       
       if (total >= 200) passingStudents++;
@@ -65,7 +65,7 @@ const Dashboard = () => {
     
     filteredTranscripts.forEach(transcript => {
       const course = transcript.student.course;
-      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0);
+      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
       
       if (!courseData[course]) {
         courseData[course] = { totalMarks: 0, count: 0, students: [] };
@@ -104,8 +104,8 @@ const Dashboard = () => {
           subjectData[subjectName] = { totalMarks: 0, count: 0, students: [] };
         }
         
-        if (unit.cat !== null || unit.exam !== null) {
-          const unitTotal = (unit.cat || 0) + (unit.exam || 0);
+        if (unit.exam !== null) {
+          const unitTotal = (unit.exam || 0);
           subjectData[subjectName].totalMarks += unitTotal;
           subjectData[subjectName].count += 1;
           subjectData[subjectName].students.push({
@@ -136,7 +136,7 @@ const Dashboard = () => {
         name: transcript.student.name,
         admissionNumber: transcript.student.admissionNumber,
         course: transcript.student.course,
-        total: transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0)
+        total: transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0)
       }))
       .sort((a, b) => b.total - a.total)
       .slice(0, 10);
@@ -168,7 +168,7 @@ const Dashboard = () => {
     const levels = { DISTINCTION: 0, CREDIT: 0, PASS: 0, FAIL: 0 };
     
     filteredTranscripts.forEach(transcript => {
-      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0);
+      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
       
       if (total >= 451) levels.DISTINCTION++;
       else if (total >= 301) levels.CREDIT++;
