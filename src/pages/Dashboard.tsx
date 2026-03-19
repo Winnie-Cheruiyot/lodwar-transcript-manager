@@ -65,7 +65,7 @@ const Dashboard = () => {
     
     filteredTranscripts.forEach(transcript => {
       const course = transcript.student.course;
-      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.cat || 0) + (unit.exam || 0), 0);
+      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
       
       if (!courseData[course]) {
         courseData[course] = { totalMarks: 0, count: 0, students: [] };
