@@ -104,8 +104,8 @@ const Dashboard = () => {
           subjectData[subjectName] = { totalMarks: 0, count: 0, students: [] };
         }
         
-        if (unit.cat !== null || unit.exam !== null) {
-          const unitTotal = (unit.cat || 0) + (unit.exam || 0);
+        if (unit.exam !== null) {
+          const unitTotal = (unit.exam || 0);
           subjectData[subjectName].totalMarks += unitTotal;
           subjectData[subjectName].count += 1;
           subjectData[subjectName].students.push({
