@@ -219,7 +219,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         </div>
         
         <div className="mt-3 text-center text-xs text-gray-600 border-t pt-2">
-          <p>&copy; Examination Department @ 2025 LVTC. All Rights Reserved.</p>
+          <p>&copy; Examination Department @ 2026 LVTC. All Rights Reserved.</p>
         </div>
       </div>
 
