@@ -63,21 +63,21 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
   const hodComments = transcript.hodComments || getHodComments(passLevel);
 
   return (
-    <div className={`bg-white rounded-3xl overflow-hidden shadow-lg mx-auto transition-all ${isPrinting ? "animate-print-pop" : ""} print:shadow-none print:w-full print:max-w-none`}>
-      <div className="p-3 rounded-t-3xl bg-lvtc-navy text-white relative overflow-hidden">
+    <div className={`bg-white rounded-3xl overflow-hidden shadow-lg mx-auto transition-all text-base ${isPrinting ? "animate-print-pop" : ""} print:shadow-none print:w-full print:max-w-none`}>
+      <div className="p-4 rounded-t-3xl bg-lvtc-navy text-white relative overflow-hidden">
         {/* Contact Info Header */}
-        <div className="flex justify-between text-xs">
+        <div className="flex justify-between text-sm">
           <div className="flex items-center">
-            <div className="rounded-full bg-white p-0.5 mr-1">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-black" viewBox="0 0 20 20" fill="currentColor">
+            <div className="rounded-full bg-white p-0.5 mr-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-black" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
               </svg>
             </div>
             <span>0716911279</span>
           </div>
           <div className="flex items-center">
-            <div className="rounded-full bg-white p-0.5 mr-1">
-              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 text-black" viewBox="0 0 20 20" fill="currentColor">
+            <div className="rounded-full bg-white p-0.5 mr-1.5">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-black" viewBox="0 0 20 20" fill="currentColor">
                 <path d="M2.003 5.884L10 9.882l7.997-3.998A2 2 0 0016 4H4a2 2 0 00-1.997 1.884z" />
                 <path d="M18 8.118l-8 4-8-4V14a2 2 0 002 2h12a2 2 0 002-2V8.118z" />
               </svg>
@@ -87,77 +87,77 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         </div>
 
         {/* School Logo and Name */}
-        <div className="flex items-center justify-center py-2">
-          <img src={logo} alt="Lodwar VTC Logo" className="w-16 h-16 object-contain mr-3" />
+        <div className="flex items-center justify-center py-3">
+          <img src={logo} alt="Lodwar VTC Logo" className="w-20 h-20 object-contain mr-4" />
           <div className="text-white text-center">
-            <h1 className="text-xl font-bold mb-0 uppercase tracking-wide">Lodwar Vocational Training</h1>
-            <h1 className="text-xl font-bold uppercase tracking-wide">Centre</h1>
+            <h1 className="text-2xl font-bold mb-0 uppercase tracking-wide">Lodwar Vocational Training</h1>
+            <h1 className="text-2xl font-bold uppercase tracking-wide">Centre</h1>
           </div>
         </div>
 
-        <div className="text-center bg-lvtc-navy py-1">
-          <h2 className="text-lg font-bold uppercase">ACADEMIC TRANSCRIPT</h2>
+        <div className="text-center bg-lvtc-navy py-1.5">
+          <h2 className="text-xl font-bold uppercase">ACADEMIC TRANSCRIPT</h2>
         </div>
       </div>
 
-      <div className="p-4 bg-white">
+      <div className="p-5 bg-white">
         {/* Student Information */}
-        <div className="flex flex-wrap mb-3 border-b pb-2 border-gray-300">
-          <div className="w-1/2 flex items-center mb-1">
-            <span className="font-bold text-lvtc-navy mr-1">Name:</span>
+        <div className="flex flex-wrap mb-4 border-b pb-3 border-gray-300 text-base">
+          <div className="w-1/2 flex items-center mb-2">
+            <span className="font-bold text-lvtc-navy mr-2">Name:</span>
             <span>{transcript.student.name}</span>
           </div>
-          <div className="w-1/2 flex items-center mb-1">
-            <span className="font-bold text-lvtc-navy mr-1">Adm No:</span>
+          <div className="w-1/2 flex items-center mb-2">
+            <span className="font-bold text-lvtc-navy mr-2">Adm No:</span>
             <span>{transcript.student.admissionNumber}</span>
           </div>
           <div className="w-1/2 flex items-center">
-            <span className="font-bold text-lvtc-navy mr-1">Course:</span>
+            <span className="font-bold text-lvtc-navy mr-2">Course:</span>
             <span>{transcript.student.course}</span>
           </div>
           <div className="w-1/2 flex items-center">
-            <span className="font-bold text-lvtc-navy mr-1">School Year:</span>
+            <span className="font-bold text-lvtc-navy mr-2">School Year:</span>
             <span>{transcript.student.schoolYear}</span>
           </div>
         </div>
 
         {/* Grades Table */}
-        <div className="mb-2">
-          <table className="w-full border-collapse">
+        <div className="mb-3">
+          <table className="w-full border-collapse text-base">
             <thead>
               <tr className="bg-lvtc-navy text-white">
-                <th className="p-1 text-left">COURSE UNIT</th>
-                <th className="p-1 text-center">EXAM (100)</th>
-                <th className="p-1 text-center">GRADE</th>
+                <th className="p-2 text-left text-sm">COURSE UNIT</th>
+                <th className="p-2 text-center text-sm">EXAM (100)</th>
+                <th className="p-2 text-center text-sm">GRADE</th>
               </tr>
             </thead>
             <tbody>
               {transcript.courseUnits.map((unit, index) => (
                 <tr key={unit.id} className={index % 2 === 0 ? "bg-lvtc-yellow/50" : "bg-white"}>
-                  <td className="p-1.5 font-semibold">{unit.name}</td>
-                  <td className="p-1.5 text-center">{unit.exam !== null ? unit.exam : "-"}</td>
-                  <td className="p-1.5 text-center">{unit.grade || "-"}</td>
+                  <td className="p-2 font-semibold">{unit.name}</td>
+                  <td className="p-2 text-center">{unit.exam !== null ? unit.exam : "-"}</td>
+                  <td className="p-2 text-center">{unit.grade || "-"}</td>
                 </tr>
               ))}
               <tr className="bg-lvtc-yellow font-bold">
-                <td className="p-1.5">Total</td>
-                <td className="p-1.5 text-center">{stats.total}</td>
-                <td className="p-1.5 text-center">-</td>
+                <td className="p-2">Total</td>
+                <td className="p-2 text-center">{stats.total}</td>
+                <td className="p-2 text-center">-</td>
               </tr>
             </tbody>
           </table>
         </div>
 
         {/* Final Grade and Pass Scales */}
-        <div className="flex justify-between items-start bg-gray-100 p-2 rounded mb-2 gap-4">
-          <div className="font-bold text-lvtc-navy flex items-center gap-2">
-            FINAL GRADE: <span className="text-black text-lg">{passLevel}</span>
+        <div className="flex justify-between items-start bg-gray-100 p-3 rounded mb-3 gap-4">
+          <div className="font-bold text-lvtc-navy flex items-center gap-2 text-base">
+            FINAL GRADE: <span className="text-black text-xl">{passLevel}</span>
           </div>
           <div className="flex flex-col gap-1">
-            <div className="text-xs font-semibold text-lvtc-navy mb-1">Pass Scales:</div>
-            <div className="flex flex-wrap gap-2">
+            <div className="text-sm font-semibold text-lvtc-navy mb-1">Pass Scales:</div>
+            <div className="flex flex-wrap gap-3">
               {passScales.map((scale, index) => (
-                <div key={index} className="flex items-center gap-1 text-xs">
+                <div key={index} className="flex items-center gap-1 text-sm">
                   <span className="font-semibold">{scale.level}:</span>
                   <span>{scale.range}</span>
                 </div>
@@ -167,12 +167,12 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         </div>
 
         {/* Grade Scale Legend */}
-        <div className="bg-gray-50 p-2 rounded mb-3 flex justify-end">
+        <div className="bg-gray-50 p-3 rounded mb-4 flex justify-end">
           <div className="flex flex-col gap-1">
-            <div className="text-xs font-semibold text-lvtc-navy mb-1">Grade Scales:</div>
-            <div className="flex flex-wrap justify-end gap-x-3 gap-y-1">
+            <div className="text-sm font-semibold text-lvtc-navy mb-1">Grade Scales:</div>
+            <div className="flex flex-wrap justify-end gap-x-4 gap-y-1">
               {gradeScales.map((scale, index) => (
-                <div key={index} className="flex items-center gap-1 text-xs">
+                <div key={index} className="flex items-center gap-1 text-sm">
                   <span className="font-bold">{scale.grade}:</span>
                   <span>{scale.range}</span>
                 </div>
@@ -182,43 +182,43 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         </div>
 
         {/* Comments and Info Section */}
-        <div className="grid grid-cols-3 gap-3">
-          <div className="bg-lvtc-yellow/60 p-3 rounded">
-            <div className="uppercase font-bold mb-2 text-center">Manager Comments:</div>
+        <div className="grid grid-cols-3 gap-4">
+          <div className="bg-lvtc-yellow/60 p-4 rounded">
+            <div className="uppercase font-bold mb-2 text-center text-sm">Manager Comments:</div>
             <div className="min-h-[85px] text-sm">{managerComments}</div>
-            <div className="mt-3 font-bold text-center">
+            <div className="mt-3 font-bold text-center text-sm">
               MR. ABRAHAM CHEGEM<br />
               MANAGER LVTC
             </div>
           </div>
 
-          <div className="bg-lvtc-yellow/60 p-3 rounded flex flex-col justify-between">
+          <div className="bg-lvtc-yellow/60 p-4 rounded flex flex-col justify-between">
             <div className="space-y-4">
               <div>
-                <div className="uppercase font-bold mb-1">Closing Day:</div>
-                <div>{transcript.closingDay}</div>
+                <div className="uppercase font-bold mb-1 text-sm">Closing Day:</div>
+                <div className="text-sm">{transcript.closingDay}</div>
               </div>
               <div>
-                <div className="uppercase font-bold mb-1">Opening Day:</div>
-                <div>{transcript.openingDay}</div>
+                <div className="uppercase font-bold mb-1 text-sm">Opening Day:</div>
+                <div className="text-sm">{transcript.openingDay}</div>
               </div>
               <div>
-                <div className="uppercase font-bold mb-1">Fee Balance:</div>
-                <div className="font-bold">{transcript.feeBalance}</div>
+                <div className="uppercase font-bold mb-1 text-sm">Fee Balance:</div>
+                <div className="font-bold text-sm">{transcript.feeBalance}</div>
               </div>
             </div>
           </div>
 
-          <div className="bg-lvtc-yellow/60 p-3 rounded">
-            <div className="uppercase font-bold mb-2 text-center">H.O.D Comments:</div>
+          <div className="bg-lvtc-yellow/60 p-4 rounded">
+            <div className="uppercase font-bold mb-2 text-center text-sm">H.O.D Comments:</div>
             <div className="min-h-[85px] text-sm">{hodComments}</div>
-            <div className="mt-3 font-bold text-center">
+            <div className="mt-3 font-bold text-center text-sm">
               {transcript.hodName || "H.O.D"}
             </div>
           </div>
         </div>
         
-        <div className="mt-3 text-center text-xs text-gray-600 border-t pt-2">
+        <div className="mt-4 text-center text-sm text-gray-600 border-t pt-3">
           <p>&copy; Examination Department @ 2026 LVTC. All Rights Reserved.</p>
         </div>
       </div>
@@ -228,16 +228,16 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           @media print {
             @page { size: A4 portrait; margin: 8mm; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-            body { margin: 0; padding: 0; font-size: 11px; }
+            body { margin: 0; padding: 0; font-size: 13px; }
             .print-container { width: 100%; page-break-after: always; }
             .bg-lvtc-navy { background-color: #1a2332 !important; color: white !important; }
             .bg-lvtc-yellow, .bg-lvtc-yellow\\/50, .bg-lvtc-yellow\\/60 { background-color: #f5e6b8 !important; }
             .text-lvtc-navy { color: #1a2332 !important; }
             table { border-collapse: collapse; }
-            th, td { padding: 4px 6px !important; }
+            th, td { padding: 6px 8px !important; }
             .rounded-3xl { border-radius: 0 !important; }
             .shadow-lg { box-shadow: none !important; }
-            img { max-width: 60px !important; max-height: 60px !important; }
+            img { max-width: 70px !important; max-height: 70px !important; }
           }
         `}
       </style>
