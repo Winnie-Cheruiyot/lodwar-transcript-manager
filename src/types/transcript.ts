@@ -57,6 +57,7 @@ export const defaultCourseUnits: CourseUnit[] = [
   { id: '5', name: 'MATHEMATICS', exam: null, grade: null },
   { id: '6', name: 'GENERAL SCIENCE', exam: null, grade: null },
   { id: '7', name: 'DIGITAL LITERACY', exam: null, grade: null },
+  { id: '8', name: 'LIFE SKILLS', exam: null, grade: null },
 ];
 
 export const calculateGrade = (exam: number | null): string | null => {

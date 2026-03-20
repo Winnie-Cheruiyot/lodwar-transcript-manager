@@ -166,7 +166,7 @@ const Students = () => {
                   </div>
                 </div>
                 <div class="text-center bg-lvtc-navy py-1">
-                  <h2 class="text-lg font-bold uppercase">TRANSCRIPT</h2>
+                  <h2 class="text-lg font-bold uppercase">ACADEMIC TRANSCRIPT</h2>
                 </div>
               </div>
               <div class="p-4 bg-white">
