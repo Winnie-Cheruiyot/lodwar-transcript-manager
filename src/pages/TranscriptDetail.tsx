@@ -70,7 +70,7 @@ const TranscriptDetail = () => {
     data.push({ "Subject": "Opening Day", "EXAM (100)": transcript.openingDay });
     data.push({ "Subject": "Fee Balance", "EXAM (100)": transcript.feeBalance });
     data.push({});
-    data.push({ "Subject": "© Examination department@2025 LVTC" });
+    data.push({ "Subject": "© Examination Department @ 2026 LVTC. All Rights Reserved." });
 
     const worksheet = XLSX.utils.json_to_sheet(data);
     const workbook = XLSX.utils.book_new();
