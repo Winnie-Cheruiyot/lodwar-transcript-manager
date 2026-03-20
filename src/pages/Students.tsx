@@ -217,11 +217,11 @@ const Students = () => {
                   <div class="font-bold text-lvtc-navy">FINAL GRADE: ${
                    (() => {
                       const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
-                      for (const scale of [
-                        { level: "DISTINCTION", range: "451-700" },
-                        { level: "CREDIT", range: "301-450" },
-                        { level: "PASS", range: "200-300" },
-                        { level: "FAIL", range: "0-199" }
+                       for (const scale of [
+                        { level: "DISTINCTION", range: "561-800" },
+                        { level: "CREDIT", range: "401-560" },
+                        { level: "PASS", range: "240-400" },
+                        { level: "FAIL", range: "0-239" }
                       ]) {
                         const [min, max] = scale.range.split('-').map(Number);
                         if (total >= min && total <= max) {
