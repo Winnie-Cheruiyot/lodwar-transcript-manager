@@ -226,9 +226,18 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
       <style>
         {`
           @media print {
-            @page { size: A4 portrait; margin: 0.5cm; }
-            body { margin: 0; padding: 0; }
-            .print-container { width: 100%; height: 100%; page-break-after: always; }
+            @page { size: A4 portrait; margin: 8mm; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+            body { margin: 0; padding: 0; font-size: 11px; }
+            .print-container { width: 100%; page-break-after: always; }
+            .bg-lvtc-navy { background-color: #1a2332 !important; color: white !important; }
+            .bg-lvtc-yellow, .bg-lvtc-yellow\\/50, .bg-lvtc-yellow\\/60 { background-color: #f5e6b8 !important; }
+            .text-lvtc-navy { color: #1a2332 !important; }
+            table { border-collapse: collapse; }
+            th, td { padding: 4px 6px !important; }
+            .rounded-3xl { border-radius: 0 !important; }
+            .shadow-lg { box-shadow: none !important; }
+            img { max-width: 60px !important; max-height: 60px !important; }
           }
         `}
       </style>
