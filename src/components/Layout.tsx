@@ -69,17 +69,11 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       <style>
         {`
           @media print {
-            @page {
-              size: A4;
-              margin: 0.5cm;
-            }
-            body {
-              padding: 0;
-              margin: 0;
-            }
-            .print-hidden {
-              display: none;
-            }
+            @page { size: A4 portrait; margin: 8mm; }
+            * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
+            body { padding: 0; margin: 0; }
+            .print-hidden, header, footer, .print\\:hidden { display: none !important; }
+            main { padding: 0 !important; }
           }
         `}
       </style>
