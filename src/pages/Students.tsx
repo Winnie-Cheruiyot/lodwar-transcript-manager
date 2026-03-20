@@ -233,10 +233,10 @@ const Students = () => {
                   }</div>
                   <div class="flex-1 ml-4 flex space-x-4">
                     ${[
-                      { level: "DISTINCTION", range: "451-700" },
-                      { level: "CREDIT", range: "301-450" },
-                      { level: "PASS", range: "200-300" },
-                      { level: "FAIL", range: "0-199" }
+                      { level: "DISTINCTION", range: "561-800" },
+                      { level: "CREDIT", range: "401-560" },
+                      { level: "PASS", range: "240-400" },
+                      { level: "FAIL", range: "0-239" }
                     ].map(scale => `
                       <div class="flex items-center gap-1 text-sm">
                         <span class="font-bold">${scale.level}:</span>
