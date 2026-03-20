@@ -43,10 +43,10 @@ export const gradeScales: GradeScale[] = [
 ];
 
 export const passScales = [
-  { level: 'DISTINCTION', range: '451-700' },
-  { level: 'CREDIT', range: '301-450' },
-  { level: 'PASS', range: '200-300' },
-  { level: 'FAIL', range: '0-199' },
+  { level: 'DISTINCTION', range: '561-800' },
+  { level: 'CREDIT', range: '401-560' },
+  { level: 'PASS', range: '240-400' },
+  { level: 'FAIL', range: '0-239' },
 ];
 
 export const defaultCourseUnits: CourseUnit[] = [
@@ -57,6 +57,7 @@ export const defaultCourseUnits: CourseUnit[] = [
   { id: '5', name: 'MATHEMATICS', exam: null, grade: null },
   { id: '6', name: 'GENERAL SCIENCE', exam: null, grade: null },
   { id: '7', name: 'DIGITAL LITERACY', exam: null, grade: null },
+  { id: '8', name: 'LIFE SKILLS', exam: null, grade: null },
 ];
 
 export const calculateGrade = (exam: number | null): string | null => {
