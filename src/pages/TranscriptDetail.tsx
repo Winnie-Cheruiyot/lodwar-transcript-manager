@@ -112,7 +112,7 @@ const TranscriptDetail = () => {
         )}
       </div>
       
-      <div className="mt-8 text-center text-sm text-gray-500 print:mt-4">© Examination department@2025 LVTC</div>
+      <div className="mt-8 text-center text-sm text-gray-500 print:mt-4">© Examination Department @ 2026 LVTC. All Rights Reserved.</div>
     </div>
   );
 };
