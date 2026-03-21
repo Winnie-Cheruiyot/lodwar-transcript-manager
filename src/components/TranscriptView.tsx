@@ -102,7 +102,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
 
       <div className="p-5 bg-white">
         {/* Student Information */}
-        <div className="flex flex-wrap mb-4 border-b pb-3 border-gray-300 text-base">
+        <div className="flex flex-wrap mb-4 border-b pb-3 border-gray-300 text-sm">
           <div className="w-1/2 flex items-center mb-2">
             <span className="font-bold text-lvtc-navy mr-2">Name:</span>
             <span>{transcript.student.name}</span>
