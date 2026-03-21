@@ -90,8 +90,8 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         <div className="flex items-center justify-center py-3">
           <img src={logo} alt="Lodwar VTC Logo" className="w-20 h-20 object-contain mr-4" />
           <div className="text-white text-center">
-            <h1 className="text-2xl font-bold mb-0 uppercase tracking-wide">Lodwar Vocational Training</h1>
-            <h1 className="text-2xl font-bold uppercase tracking-wide">Centre</h1>
+            <h1 className="text-xl font-bold mb-0 uppercase tracking-wide">Lodwar Vocational Training</h1>
+            <h1 className="text-xl font-bold uppercase tracking-wide">Centre</h1>
           </div>
         </div>
 
