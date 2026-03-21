@@ -63,7 +63,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
   const hodComments = transcript.hodComments || getHodComments(passLevel);
 
   return (
-    <div className={`bg-white rounded-3xl overflow-hidden shadow-lg mx-auto transition-all text-base ${isPrinting ? "animate-print-pop" : ""} print:shadow-none print:w-full print:max-w-none`}>
+    <div className={`bg-white rounded-3xl overflow-hidden shadow-lg mx-auto transition-all text-sm ${isPrinting ? "animate-print-pop" : ""} print:shadow-none print:w-full print:max-w-none`}>
       <div className="p-4 rounded-t-3xl bg-lvtc-navy text-white relative overflow-hidden">
         {/* Contact Info Header */}
         <div className="flex justify-between text-sm">
@@ -90,19 +90,19 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         <div className="flex items-center justify-center py-3">
           <img src={logo} alt="Lodwar VTC Logo" className="w-20 h-20 object-contain mr-4" />
           <div className="text-white text-center">
-            <h1 className="text-2xl font-bold mb-0 uppercase tracking-wide">Lodwar Vocational Training</h1>
-            <h1 className="text-2xl font-bold uppercase tracking-wide">Centre</h1>
+            <h1 className="text-xl font-bold mb-0 uppercase tracking-wide">Lodwar Vocational Training</h1>
+            <h1 className="text-xl font-bold uppercase tracking-wide">Centre</h1>
           </div>
         </div>
 
         <div className="text-center bg-lvtc-navy py-1.5">
-          <h2 className="text-xl font-bold uppercase">ACADEMIC TRANSCRIPT</h2>
+          <h2 className="text-lg font-bold uppercase">ACADEMIC TRANSCRIPT</h2>
         </div>
       </div>
 
       <div className="p-5 bg-white">
         {/* Student Information */}
-        <div className="flex flex-wrap mb-4 border-b pb-3 border-gray-300 text-base">
+        <div className="flex flex-wrap mb-4 border-b pb-3 border-gray-300 text-sm">
           <div className="w-1/2 flex items-center mb-2">
             <span className="font-bold text-lvtc-navy mr-2">Name:</span>
             <span>{transcript.student.name}</span>
@@ -123,7 +123,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
 
         {/* Grades Table */}
         <div className="mb-3">
-          <table className="w-full border-collapse text-base">
+          <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="bg-lvtc-navy text-white">
                 <th className="p-2 text-left text-sm">COURSE UNIT</th>
@@ -150,8 +150,8 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
 
         {/* Final Grade and Pass Scales */}
         <div className="flex justify-between items-start bg-gray-100 p-3 rounded mb-3 gap-4">
-          <div className="font-bold text-lvtc-navy flex items-center gap-2 text-base">
-            FINAL GRADE: <span className="text-black text-xl">{passLevel}</span>
+          <div className="font-bold text-lvtc-navy flex items-center gap-2 text-sm">
+            FINAL GRADE: <span className="text-black text-lg">{passLevel}</span>
           </div>
           <div className="flex flex-col gap-1">
             <div className="text-sm font-semibold text-lvtc-navy mb-1">Pass Scales:</div>
@@ -228,7 +228,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           @media print {
             @page { size: A4 portrait; margin: 8mm; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-            body { margin: 0; padding: 0; font-size: 13px; }
+            body { margin: 0; padding: 0; font-size: 12px; }
             .print-container { width: 100%; page-break-after: always; }
             .bg-lvtc-navy { background-color: #1a2332 !important; color: white !important; }
             .bg-lvtc-yellow, .bg-lvtc-yellow\\/50, .bg-lvtc-yellow\\/60 { background-color: #f5e6b8 !important; }
