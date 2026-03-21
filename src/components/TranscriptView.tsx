@@ -123,7 +123,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
 
         {/* Grades Table */}
         <div className="mb-3">
-          <table className="w-full border-collapse text-base">
+          <table className="w-full border-collapse text-sm">
             <thead>
               <tr className="bg-lvtc-navy text-white">
                 <th className="p-2 text-left text-sm">COURSE UNIT</th>
