@@ -96,7 +96,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         </div>
 
         <div className="text-center bg-lvtc-navy py-1.5">
-          <h2 className="text-xl font-bold uppercase">ACADEMIC TRANSCRIPT</h2>
+          <h2 className="text-lg font-bold uppercase">ACADEMIC TRANSCRIPT</h2>
         </div>
       </div>
 
