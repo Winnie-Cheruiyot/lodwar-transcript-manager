@@ -63,7 +63,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
   const hodComments = transcript.hodComments || getHodComments(passLevel);
 
   return (
-    <div className={`bg-white rounded-3xl overflow-hidden shadow-lg mx-auto transition-all text-base ${isPrinting ? "animate-print-pop" : ""} print:shadow-none print:w-full print:max-w-none`}>
+    <div className={`bg-white rounded-3xl overflow-hidden shadow-lg mx-auto transition-all text-sm ${isPrinting ? "animate-print-pop" : ""} print:shadow-none print:w-full print:max-w-none`}>
       <div className="p-4 rounded-t-3xl bg-lvtc-navy text-white relative overflow-hidden">
         {/* Contact Info Header */}
         <div className="flex justify-between text-sm">
