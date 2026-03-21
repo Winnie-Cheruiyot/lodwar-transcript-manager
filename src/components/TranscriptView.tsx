@@ -218,7 +218,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
           </div>
         </div>
         
-        <div className="mt-4 text-center text-sm text-gray-600 border-t pt-3">
+        <div className="mt-4 text-center text-sm text-gray-600 border-t pt-3 print:block print:text-black">
           <p>&copy; Examination Department @ 2026 LVTC. All Rights Reserved.</p>
         </div>
       </div>
