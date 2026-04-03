@@ -14,7 +14,7 @@ import { toast } from "sonner";
 const Dashboard = () => {
   const { students, transcripts } = useTranscript();
   const [courseFilter, setCourseFilter] = useState("all");
-  const [yearFilter, setYearFilter] = useState("all");
+  const [termFilter, setTermFilter] = useState("all");
 
   // Extract unique courses and years for filters
   const courses = useMemo(() => {
