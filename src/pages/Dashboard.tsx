@@ -22,10 +22,41 @@ const Dashboard = () => {
     return ["all", ...Array.from(courseSet)];
   }, [students]);
 
-  const years = useMemo(() => {
-    const yearSet = new Set(students.map(student => student.schoolYear).filter(Boolean));
-    return ["all", ...Array.from(yearSet)];
+  const terms = useMemo(() => {
+    const termSet = new Set(students.map(student => student.schoolYear).filter(Boolean));
+    return ["all", ...Array.from(termSet).sort()];
   }, [students]);
+
+  // Termly performance comparison
+  const termlyStats = useMemo(() => {
+    const termData: Record<string, { totalMarks: number; count: number; passing: number }> = {};
+    
+    transcripts.forEach(transcript => {
+      const term = transcript.student.schoolYear;
+      if (!term) return;
+      
+      const matchesCourse = courseFilter === "all" || transcript.student.course === courseFilter;
+      if (!matchesCourse) return;
+      
+      if (!termData[term]) {
+        termData[term] = { totalMarks: 0, count: 0, passing: 0 };
+      }
+      
+      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
+      termData[term].totalMarks += total;
+      termData[term].count += 1;
+      if (total >= 200) termData[term].passing += 1;
+    });
+    
+    return Object.keys(termData)
+      .sort()
+      .map(term => ({
+        term,
+        average: Math.round(termData[term].totalMarks / termData[term].count),
+        students: termData[term].count,
+        passRate: Math.round((termData[term].passing / termData[term].count) * 100),
+      }));
+  }, [transcripts, courseFilter]);
 
   // Filter transcripts based on selected filters
   const filteredTranscripts = useMemo(() => {
