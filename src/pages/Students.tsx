@@ -394,7 +394,7 @@ const Students = () => {
                   <TableHead className="text-left text-white">Name</TableHead>
                   <TableHead className="text-left text-white">Admission Number</TableHead>
                   <TableHead className="text-left text-white">Course</TableHead>
-                  <TableHead className="text-left text-white">School Year</TableHead>
+                  <TableHead className="text-left text-white">Term</TableHead>
                   <TableHead className="text-right text-white">Actions</TableHead>
                 </TableRow>
               </TableHeader>
