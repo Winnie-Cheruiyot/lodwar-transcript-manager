@@ -257,12 +257,12 @@ const Dashboard = () => {
           <div>
             <select
               className="px-3 py-2 border rounded-md"
-              value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
+              value={termFilter}
+              onChange={(e) => setTermFilter(e.target.value)}
             >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year === "all" ? "All Years" : year}
+              {terms.map((term) => (
+                <option key={term} value={term}>
+                  {term === "all" ? "All Terms" : term}
                 </option>
               ))}
             </select>
