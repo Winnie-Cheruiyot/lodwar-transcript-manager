@@ -62,10 +62,10 @@ const Dashboard = () => {
   const filteredTranscripts = useMemo(() => {
     return transcripts.filter(transcript => {
       const matchesCourse = courseFilter === "all" || transcript.student.course === courseFilter;
-      const matchesYear = yearFilter === "all" || transcript.student.schoolYear === yearFilter;
-      return matchesCourse && matchesYear;
+      const matchesTerm = termFilter === "all" || transcript.student.schoolYear === termFilter;
+      return matchesCourse && matchesTerm;
     });
-  }, [transcripts, courseFilter, yearFilter]);
+  }, [transcripts, courseFilter, termFilter]);
 
   // Calculate school averages
   const schoolStats = useMemo(() => {
