@@ -372,7 +372,94 @@ const Dashboard = () => {
           </div>
         </TabsContent>
         
-        {/* Courses Tab */}
+        {/* Termly Performance Tab */}
+        <TabsContent value="termly" className="space-y-6">
+          <div className="grid grid-cols-1 gap-6 mt-6">
+            {/* Termly Average Score Trend */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Termly Average Score Trend</CardTitle>
+              </CardHeader>
+              <CardContent className="h-80">
+                {termlyStats.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={termlyStats}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="term" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line type="monotone" dataKey="average" name="Average Score" stroke="#8884d8" strokeWidth={2} dot={{ r: 5 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p className="text-muted-foreground text-center py-10">No termly data available</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Termly Pass Rate & Students */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Termly Pass Rate & Student Count</CardTitle>
+              </CardHeader>
+              <CardContent className="h-80">
+                {termlyStats.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={termlyStats}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="term" />
+                      <YAxis yAxisId="left" />
+                      <YAxis yAxisId="right" orientation="right" />
+                      <Tooltip />
+                      <Legend />
+                      <Bar yAxisId="left" dataKey="passRate" name="Pass Rate (%)" fill="#00C49F" />
+                      <Bar yAxisId="right" dataKey="students" name="Students" fill="#8884d8" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p className="text-muted-foreground text-center py-10">No termly data available</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Termly Summary Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Termly Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Term</TableHead>
+                        <TableHead className="text-right">Students</TableHead>
+                        <TableHead className="text-right">Average Score</TableHead>
+                        <TableHead className="text-right">Pass Rate</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {termlyStats.length > 0 ? termlyStats.map((stat) => (
+                        <TableRow key={stat.term}>
+                          <TableCell className="font-medium">{stat.term}</TableCell>
+                          <TableCell className="text-right">{stat.students}</TableCell>
+                          <TableCell className="text-right">{stat.average}</TableCell>
+                          <TableCell className="text-right">{stat.passRate}%</TableCell>
+                        </TableRow>
+                      )) : (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center text-muted-foreground">No termly data available</TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+        
         <TabsContent value="courses" className="space-y-6">
           <div className="grid grid-cols-1 gap-6 mt-6">
             {/* Course Averages */}
