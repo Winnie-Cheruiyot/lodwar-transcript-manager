@@ -116,7 +116,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
             <span>{transcript.student.course}</span>
           </div>
           <div className="w-1/2 flex items-center">
-            <span className="font-bold text-lvtc-navy mr-2">School Year:</span>
+            <span className="font-bold text-lvtc-navy mr-2">Term:</span>
             <span>{transcript.student.schoolYear}</span>
           </div>
         </div>

@@ -184,7 +184,7 @@ const Students = () => {
                     <span>${transcript.student.course}</span>
                   </div>
                   <div class="w-1/2 flex items-center">
-                    <span class="font-bold text-lvtc-navy mr-1">School Year:</span>
+                    <span class="font-bold text-lvtc-navy mr-1">Term:</span>
                     <span>${transcript.student.schoolYear}</span>
                   </div>
                 </div>
@@ -394,7 +394,7 @@ const Students = () => {
                   <TableHead className="text-left text-white">Name</TableHead>
                   <TableHead className="text-left text-white">Admission Number</TableHead>
                   <TableHead className="text-left text-white">Course</TableHead>
-                  <TableHead className="text-left text-white">School Year</TableHead>
+                  <TableHead className="text-left text-white">Term</TableHead>
                   <TableHead className="text-right text-white">Actions</TableHead>
                 </TableRow>
               </TableHeader>
