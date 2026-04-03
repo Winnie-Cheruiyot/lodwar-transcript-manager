@@ -3,7 +3,7 @@ import React, { useState, useMemo } from "react";
 import { useTranscript } from "@/context/TranscriptContext";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell } from "recharts";
+import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from "recharts";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,7 +14,7 @@ import { toast } from "sonner";
 const Dashboard = () => {
   const { students, transcripts } = useTranscript();
   const [courseFilter, setCourseFilter] = useState("all");
-  const [yearFilter, setYearFilter] = useState("all");
+  const [termFilter, setTermFilter] = useState("all");
 
   // Extract unique courses and years for filters
   const courses = useMemo(() => {
@@ -22,19 +22,50 @@ const Dashboard = () => {
     return ["all", ...Array.from(courseSet)];
   }, [students]);
 
-  const years = useMemo(() => {
-    const yearSet = new Set(students.map(student => student.schoolYear).filter(Boolean));
-    return ["all", ...Array.from(yearSet)];
+  const terms = useMemo(() => {
+    const termSet = new Set(students.map(student => student.schoolYear).filter(Boolean));
+    return ["all", ...Array.from(termSet).sort()];
   }, [students]);
+
+  // Termly performance comparison
+  const termlyStats = useMemo(() => {
+    const termData: Record<string, { totalMarks: number; count: number; passing: number }> = {};
+    
+    transcripts.forEach(transcript => {
+      const term = transcript.student.schoolYear;
+      if (!term) return;
+      
+      const matchesCourse = courseFilter === "all" || transcript.student.course === courseFilter;
+      if (!matchesCourse) return;
+      
+      if (!termData[term]) {
+        termData[term] = { totalMarks: 0, count: 0, passing: 0 };
+      }
+      
+      const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
+      termData[term].totalMarks += total;
+      termData[term].count += 1;
+      if (total >= 200) termData[term].passing += 1;
+    });
+    
+    return Object.keys(termData)
+      .sort()
+      .map(term => ({
+        term,
+        average: Math.round(termData[term].totalMarks / termData[term].count),
+        students: termData[term].count,
+        passRate: Math.round((termData[term].passing / termData[term].count) * 100),
+      }));
+  }, [transcripts, courseFilter]);
 
   // Filter transcripts based on selected filters
   const filteredTranscripts = useMemo(() => {
     return transcripts.filter(transcript => {
       const matchesCourse = courseFilter === "all" || transcript.student.course === courseFilter;
-      const matchesYear = yearFilter === "all" || transcript.student.schoolYear === yearFilter;
-      return matchesCourse && matchesYear;
+      const matchesTerm = termFilter === "all" || transcript.student.schoolYear === termFilter;
+      return matchesCourse && matchesTerm;
     });
-  }, [transcripts, courseFilter, yearFilter]);
+  }, [transcripts, courseFilter, termFilter]);
 
   // Calculate school averages
   const schoolStats = useMemo(() => {
@@ -226,12 +257,12 @@ const Dashboard = () => {
           <div>
             <select
               className="px-3 py-2 border rounded-md"
-              value={yearFilter}
-              onChange={(e) => setYearFilter(e.target.value)}
+              value={termFilter}
+              onChange={(e) => setTermFilter(e.target.value)}
             >
-              {years.map((year) => (
-                <option key={year} value={year}>
-                  {year === "all" ? "All Years" : year}
+              {terms.map((term) => (
+                <option key={term} value={term}>
+                  {term === "all" ? "All Terms" : term}
                 </option>
               ))}
             </select>
@@ -280,8 +311,9 @@ const Dashboard = () => {
       </div>
 
       <Tabs defaultValue="overview" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
+        <TabsList className="grid w-full grid-cols-5">
           <TabsTrigger value="overview">Overview</TabsTrigger>
+          <TabsTrigger value="termly">Termly</TabsTrigger>
           <TabsTrigger value="courses">Courses</TabsTrigger>
           <TabsTrigger value="subjects">Subjects</TabsTrigger>
           <TabsTrigger value="students">Top Students</TabsTrigger>
@@ -340,7 +372,94 @@ const Dashboard = () => {
           </div>
         </TabsContent>
         
-        {/* Courses Tab */}
+        {/* Termly Performance Tab */}
+        <TabsContent value="termly" className="space-y-6">
+          <div className="grid grid-cols-1 gap-6 mt-6">
+            {/* Termly Average Score Trend */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Termly Average Score Trend</CardTitle>
+              </CardHeader>
+              <CardContent className="h-80">
+                {termlyStats.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={termlyStats}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="term" />
+                      <YAxis />
+                      <Tooltip />
+                      <Legend />
+                      <Line type="monotone" dataKey="average" name="Average Score" stroke="#8884d8" strokeWidth={2} dot={{ r: 5 }} />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p className="text-muted-foreground text-center py-10">No termly data available</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Termly Pass Rate & Students */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Termly Pass Rate & Student Count</CardTitle>
+              </CardHeader>
+              <CardContent className="h-80">
+                {termlyStats.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={termlyStats}>
+                      <CartesianGrid strokeDasharray="3 3" />
+                      <XAxis dataKey="term" />
+                      <YAxis yAxisId="left" />
+                      <YAxis yAxisId="right" orientation="right" />
+                      <Tooltip />
+                      <Legend />
+                      <Bar yAxisId="left" dataKey="passRate" name="Pass Rate (%)" fill="#00C49F" />
+                      <Bar yAxisId="right" dataKey="students" name="Students" fill="#8884d8" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <p className="text-muted-foreground text-center py-10">No termly data available</p>
+                )}
+              </CardContent>
+            </Card>
+
+            {/* Termly Summary Table */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Termly Summary</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="rounded-md border">
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>Term</TableHead>
+                        <TableHead className="text-right">Students</TableHead>
+                        <TableHead className="text-right">Average Score</TableHead>
+                        <TableHead className="text-right">Pass Rate</TableHead>
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {termlyStats.length > 0 ? termlyStats.map((stat) => (
+                        <TableRow key={stat.term}>
+                          <TableCell className="font-medium">{stat.term}</TableCell>
+                          <TableCell className="text-right">{stat.students}</TableCell>
+                          <TableCell className="text-right">{stat.average}</TableCell>
+                          <TableCell className="text-right">{stat.passRate}%</TableCell>
+                        </TableRow>
+                      )) : (
+                        <TableRow>
+                          <TableCell colSpan={4} className="text-center text-muted-foreground">No termly data available</TableCell>
+                        </TableRow>
+                      )}
+                    </TableBody>
+                  </Table>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </TabsContent>
+        
         <TabsContent value="courses" className="space-y-6">
           <div className="grid grid-cols-1 gap-6 mt-6">
             {/* Course Averages */}
