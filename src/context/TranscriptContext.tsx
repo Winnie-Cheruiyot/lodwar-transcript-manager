@@ -108,7 +108,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
         const t = trArr.find(t => t.id === s.transcriptId);
         await supabase.from("transcripts").insert({
           student_id: newS.id,
-          course_units: t?.courseUnits ?? defaultCourseUnits,
+          course_units: (t?.courseUnits ?? defaultCourseUnits) as any,
           remarks: t?.remarks ?? "",
           manager_comments: t?.managerComments ?? "",
           hod_comments: t?.hodComments ?? "",
@@ -145,7 +145,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
 
     const { data: newT, error: tErr } = await supabase.from("transcripts").insert({
       student_id: newS.id,
-      course_units: defaultCourseUnits,
+      course_units: defaultCourseUnits as any,
     }).select().single();
     if (tErr || !newT) { toast.error("Failed to create transcript"); throw tErr; }
 
@@ -181,7 +181,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
 
   const updateTranscript = async (transcript: Transcript) => {
     const { error } = await supabase.from("transcripts").update({
-      course_units: transcript.courseUnits,
+      course_units: transcript.courseUnits as any,
       remarks: transcript.remarks,
       manager_comments: transcript.managerComments,
       hod_comments: transcript.hodComments,
@@ -260,7 +260,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
               studentId = newS.id;
               currentUnits = [...defaultCourseUnits];
               const { data: newT } = await supabase.from("transcripts").insert({
-                student_id: studentId, course_units: currentUnits
+                student_id: studentId, course_units: currentUnits as any
               }).select().single();
               if (!newT) continue;
               transcriptId = newT.id;
@@ -278,7 +278,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
             });
 
             await supabase.from("transcripts").update({
-              course_units: updatedUnits,
+              course_units: updatedUnits as any,
               closing_day: closingDay || undefined,
               opening_day: openingDay || undefined,
               fee_balance: feeBalance || undefined,
