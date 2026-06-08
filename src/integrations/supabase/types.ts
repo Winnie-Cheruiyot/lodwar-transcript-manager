@@ -14,7 +14,92 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      students: {
+        Row: {
+          admission_number: string
+          course: string
+          created_at: string
+          email: string | null
+          id: string
+          name: string
+          school_year: string
+          updated_at: string
+        }
+        Insert: {
+          admission_number: string
+          course: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name: string
+          school_year: string
+          updated_at?: string
+        }
+        Update: {
+          admission_number?: string
+          course?: string
+          created_at?: string
+          email?: string | null
+          id?: string
+          name?: string
+          school_year?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      transcripts: {
+        Row: {
+          closing_day: string | null
+          course_units: Json
+          created_at: string
+          fee_balance: string | null
+          hod_comments: string | null
+          hod_name: string | null
+          id: string
+          manager_comments: string | null
+          opening_day: string | null
+          remarks: string | null
+          student_id: string
+          updated_at: string
+        }
+        Insert: {
+          closing_day?: string | null
+          course_units?: Json
+          created_at?: string
+          fee_balance?: string | null
+          hod_comments?: string | null
+          hod_name?: string | null
+          id?: string
+          manager_comments?: string | null
+          opening_day?: string | null
+          remarks?: string | null
+          student_id: string
+          updated_at?: string
+        }
+        Update: {
+          closing_day?: string | null
+          course_units?: Json
+          created_at?: string
+          fee_balance?: string | null
+          hod_comments?: string | null
+          hod_name?: string | null
+          id?: string
+          manager_comments?: string | null
+          opening_day?: string | null
+          remarks?: string | null
+          student_id?: string
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "transcripts_student_id_fkey"
+            columns: ["student_id"]
+            isOneToOne: false
+            referencedRelation: "students"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
     }
     Views: {
       [_ in never]: never
