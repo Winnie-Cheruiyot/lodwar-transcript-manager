@@ -23,6 +23,7 @@ import ExcelImportModal from "@/components/ExcelImportModal";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
 import { Printer, Download } from "lucide-react";
+import { downloadTranscriptTemplate } from "@/lib/excelTemplate";
 
 const Students = () => {
   const { students, deleteStudent, transcripts } = useTranscript();
@@ -319,6 +320,17 @@ const Students = () => {
             onChange={(e) => setSearchTerm(e.target.value)}
             className="md:w-64"
           />
+          <Button
+            variant="outline"
+            onClick={() => {
+              downloadTranscriptTemplate();
+              toast.success("Template downloaded");
+            }}
+            className="flex items-center gap-1"
+          >
+            <Download size={16} />
+            Template
+          </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button>Add Student</Button>
