@@ -474,6 +474,17 @@ const Students = () => {
               <Download size={16} />
               Download Individual PDFs
             </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadZip}
+              disabled={!!pdfProgress}
+              className="flex items-center gap-1"
+              title="Download all transcript PDFs bundled in a single ZIP file"
+            >
+              <FileArchive size={16} />
+              Download ZIP ({selectedStudents.length > 0 ? selectedStudents.length : filteredStudents.length})
+            </Button>
           </div>
         </div>
       )}
