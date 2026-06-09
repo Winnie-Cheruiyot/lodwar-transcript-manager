@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import JSZip from "jszip";
 import TranscriptView from "@/components/TranscriptView";
 import { Transcript } from "@/types/transcript";
 
@@ -100,4 +101,55 @@ export const downloadTranscriptsIndividualPdfs = async (
       cleanup(host);
     }
   }
+};
+
+/** Build one PDF per student and bundle them into a single ZIP download. */
+export const downloadTranscriptsZip = async (
+  transcripts: Transcript[],
+  filename = "transcripts.zip",
+  onProgress?: ProgressFn,
+) => {
+  const zip = new JSZip();
+  const usedNames = new Set<string>();
+
+  for (let i = 0; i < transcripts.length; i++) {
+    const t = transcripts[i];
+    onProgress?.(i + 1, transcripts.length, t.student.name);
+    const host = await renderTranscript(t);
+    try {
+      const canvas = await html2canvas(host.firstElementChild as HTMLElement, {
+        scale: 2, useCORS: true, backgroundColor: "#ffffff",
+      });
+      const img = canvas.toDataURL("image/jpeg", 0.92);
+      const pdf = new jsPDF({ orientation: "portrait", unit: "mm", format: "a4" });
+      const pageW = pdf.internal.pageSize.getWidth();
+      const pageH = pdf.internal.pageSize.getHeight();
+      const margin = 6;
+      const availW = pageW - margin * 2;
+      const availH = pageH - margin * 2;
+      const ratio = Math.min(availW / (canvas.width / 2), availH / (canvas.height / 2));
+      const w = (canvas.width / 2) * ratio;
+      const h = (canvas.height / 2) * ratio;
+      pdf.addImage(img, "JPEG", (pageW - w) / 2, margin, w, h);
+      const base = sanitizeFilename(t.student.admissionNumber || t.student.name || "transcript");
+      let name = `${base}.pdf`;
+      let n = 1;
+      while (usedNames.has(name)) { name = `${base}_${++n}.pdf`; }
+      usedNames.add(name);
+      const blob = pdf.output("blob");
+      zip.file(name, blob);
+    } finally {
+      cleanup(host);
+    }
+  }
+
+  const zipBlob = await zip.generateAsync({ type: "blob" });
+  const url = URL.createObjectURL(zipBlob);
+  const a = document.createElement("a");
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  a.remove();
+  URL.revokeObjectURL(url);
 };

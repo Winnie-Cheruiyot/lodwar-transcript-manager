@@ -22,9 +22,9 @@ import AddStudentForm from "@/components/AddStudentForm";
 import ExcelImportModal from "@/components/ExcelImportModal";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { Printer, Download, FileDown, Loader2 } from "lucide-react";
+import { Printer, Download, FileDown, Loader2, FileArchive } from "lucide-react";
 import { downloadTranscriptTemplate } from "@/lib/excelTemplate";
-import { downloadTranscriptsCombinedPdf, downloadTranscriptsIndividualPdfs } from "@/lib/transcriptPdf";
+import { downloadTranscriptsCombinedPdf, downloadTranscriptsIndividualPdfs, downloadTranscriptsZip } from "@/lib/transcriptPdf";
 
 const Students = () => {
   const { students, deleteStudent, transcripts } = useTranscript();
@@ -77,6 +77,23 @@ const Students = () => {
     } catch (e) {
       console.error(e);
       toast.error("Failed to generate PDFs");
+    } finally {
+      setPdfProgress(null);
+    }
+  };
+
+  const handleDownloadZip = async () => {
+    const list = getTargetTranscripts();
+    if (list.length === 0) { toast.error("No transcripts to download"); return; }
+    if (list.length > 100) { toast.error("Limit is 100 transcripts per batch"); return; }
+    setPdfProgress({ current: 0, total: list.length, name: "" });
+    try {
+      await downloadTranscriptsZip(list, `transcripts_${list.length}.zip`,
+        (current, total, name) => setPdfProgress({ current, total, name }));
+      toast.success(`Zipped ${list.length} transcript PDFs`);
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to generate ZIP");
     } finally {
       setPdfProgress(null);
     }
@@ -456,6 +473,17 @@ const Students = () => {
             >
               <Download size={16} />
               Download Individual PDFs
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadZip}
+              disabled={!!pdfProgress}
+              className="flex items-center gap-1"
+              title="Download all transcript PDFs bundled in a single ZIP file"
+            >
+              <FileArchive size={16} />
+              Download ZIP ({selectedStudents.length > 0 ? selectedStudents.length : filteredStudents.length})
             </Button>
           </div>
         </div>
