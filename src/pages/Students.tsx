@@ -98,6 +98,9 @@ const Students = () => {
       setPdfProgress(null);
     }
   };
+
+  // Filter students based on search term
+  const filteredStudents = students.filter(
     (student) =>
       student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.admissionNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
