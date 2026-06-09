@@ -22,8 +22,9 @@ import AddStudentForm from "@/components/AddStudentForm";
 import ExcelImportModal from "@/components/ExcelImportModal";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { Printer, Download } from "lucide-react";
+import { Printer, Download, FileDown, Loader2 } from "lucide-react";
 import { downloadTranscriptTemplate } from "@/lib/excelTemplate";
+import { downloadTranscriptsCombinedPdf, downloadTranscriptsIndividualPdfs } from "@/lib/transcriptPdf";
 
 const Students = () => {
   const { students, deleteStudent, transcripts } = useTranscript();
@@ -32,6 +33,54 @@ const Students = () => {
   const [showImportModal, setShowImportModal] = useState(false);
   const [selectedStudents, setSelectedStudents] = useState<string[]>([]);
   const [isGeneratingBatch, setIsGeneratingBatch] = useState(false);
+  const [pdfProgress, setPdfProgress] = useState<{ current: number; total: number; name: string } | null>(null);
+
+  const getTargetTranscripts = () => {
+    const targetIds = selectedStudents.length > 0
+      ? selectedStudents
+      : filteredStudents.map(s => s.id);
+    return targetIds
+      .map(id => {
+        const s = students.find(x => x.id === id);
+        if (!s) return null;
+        return transcripts.find(t => t.id === s.transcriptId) ?? null;
+      })
+      .filter((t): t is NonNullable<typeof t> => !!t);
+  };
+
+  const handleDownloadCombined = async () => {
+    const list = getTargetTranscripts();
+    if (list.length === 0) { toast.error("No transcripts to download"); return; }
+    if (list.length > 100) { toast.error("Limit is 100 transcripts per batch"); return; }
+    setPdfProgress({ current: 0, total: list.length, name: "" });
+    try {
+      await downloadTranscriptsCombinedPdf(list, `transcripts_${list.length}.pdf`,
+        (current, total, name) => setPdfProgress({ current, total, name }));
+      toast.success(`Generated PDF with ${list.length} transcripts`);
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to generate PDF");
+    } finally {
+      setPdfProgress(null);
+    }
+  };
+
+  const handleDownloadIndividual = async () => {
+    const list = getTargetTranscripts();
+    if (list.length === 0) { toast.error("No transcripts to download"); return; }
+    if (list.length > 100) { toast.error("Limit is 100 transcripts per batch"); return; }
+    setPdfProgress({ current: 0, total: list.length, name: "" });
+    try {
+      await downloadTranscriptsIndividualPdfs(list,
+        (current, total, name) => setPdfProgress({ current, total, name }));
+      toast.success(`Downloaded ${list.length} PDF files`);
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to generate PDFs");
+    } finally {
+      setPdfProgress(null);
+    }
+  };
 
   // Filter students based on search term
   const filteredStudents = students.filter(
@@ -369,16 +418,44 @@ const Students = () => {
               Select All ({filteredStudents.length})
             </label>
           </div>
-          <div className="flex gap-2">
-            <Button 
-              variant="outline" 
+          <div className="flex flex-wrap gap-2 items-center">
+            {pdfProgress && (
+              <span className="text-xs text-gray-600 flex items-center gap-1">
+                <Loader2 size={14} className="animate-spin" />
+                {pdfProgress.current}/{pdfProgress.total} {pdfProgress.name}
+              </span>
+            )}
+            <Button
+              variant="outline"
               size="sm"
               onClick={handlePrintSelected}
-              disabled={selectedStudents.length === 0 || isGeneratingBatch}
+              disabled={selectedStudents.length === 0 || isGeneratingBatch || !!pdfProgress}
               className="flex items-center gap-1"
             >
               <Printer size={16} />
               Print Selected ({selectedStudents.length})
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadCombined}
+              disabled={!!pdfProgress}
+              className="flex items-center gap-1"
+              title="Download a single PDF containing all targeted transcripts"
+            >
+              <FileDown size={16} />
+              Download PDF ({selectedStudents.length > 0 ? selectedStudents.length : filteredStudents.length})
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={handleDownloadIndividual}
+              disabled={!!pdfProgress}
+              className="flex items-center gap-1"
+              title="Download one PDF file per student"
+            >
+              <Download size={16} />
+              Download Individual PDFs
             </Button>
           </div>
         </div>
