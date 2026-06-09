@@ -82,8 +82,22 @@ const Students = () => {
     }
   };
 
-  // Filter students based on search term
-  const filteredStudents = students.filter(
+  const handleDownloadZip = async () => {
+    const list = getTargetTranscripts();
+    if (list.length === 0) { toast.error("No transcripts to download"); return; }
+    if (list.length > 100) { toast.error("Limit is 100 transcripts per batch"); return; }
+    setPdfProgress({ current: 0, total: list.length, name: "" });
+    try {
+      await downloadTranscriptsZip(list, `transcripts_${list.length}.zip`,
+        (current, total, name) => setPdfProgress({ current, total, name }));
+      toast.success(`Zipped ${list.length} transcript PDFs`);
+    } catch (e) {
+      console.error(e);
+      toast.error("Failed to generate ZIP");
+    } finally {
+      setPdfProgress(null);
+    }
+  };
     (student) =>
       student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       student.admissionNumber.toLowerCase().includes(searchTerm.toLowerCase()) ||
