@@ -22,9 +22,9 @@ import AddStudentForm from "@/components/AddStudentForm";
 import ExcelImportModal from "@/components/ExcelImportModal";
 import { Link } from "react-router-dom";
 import { toast } from "sonner";
-import { Printer, Download, FileDown, Loader2 } from "lucide-react";
+import { Printer, Download, FileDown, Loader2, FileArchive } from "lucide-react";
 import { downloadTranscriptTemplate } from "@/lib/excelTemplate";
-import { downloadTranscriptsCombinedPdf, downloadTranscriptsIndividualPdfs } from "@/lib/transcriptPdf";
+import { downloadTranscriptsCombinedPdf, downloadTranscriptsIndividualPdfs, downloadTranscriptsZip } from "@/lib/transcriptPdf";
 
 const Students = () => {
   const { students, deleteStudent, transcripts } = useTranscript();
