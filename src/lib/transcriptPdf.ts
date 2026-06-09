@@ -2,6 +2,7 @@ import React from "react";
 import { createRoot, Root } from "react-dom/client";
 import html2canvas from "html2canvas";
 import jsPDF from "jspdf";
+import JSZip from "jszip";
 import TranscriptView from "@/components/TranscriptView";
 import { Transcript } from "@/types/transcript";
 
