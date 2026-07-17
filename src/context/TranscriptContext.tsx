@@ -3,6 +3,8 @@ import { Transcript, Student, CourseUnit, defaultCourseUnits, calculateGrade } f
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
+import { getHodForCourse } from "@/lib/courses";
+
 
 interface TranscriptContextType {
   transcripts: Transcript[];
