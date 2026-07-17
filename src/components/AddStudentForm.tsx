@@ -40,6 +40,9 @@ const AddStudentForm: React.FC<AddStudentFormProps> = ({ onSuccess, onCancel }) 
   const [termNumber, setTermNumber] = useState("1");
   const [termYear, setTermYear] = useState(String(currentYear));
 
+  const [termNumber, setTermNumber] = useState("1");
+  const [termYear, setTermYear] = useState(String(currentYear));
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
