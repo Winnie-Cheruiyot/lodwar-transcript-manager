@@ -148,7 +148,9 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
     const { data: newT, error: tErr } = await supabase.from("transcripts").insert({
       student_id: newS.id,
       course_units: defaultCourseUnits as any,
+      hod_name: getHodForCourse(studentData.course),
     }).select().single();
+
     if (tErr || !newT) { toast.error("Failed to create transcript"); throw tErr; }
 
     const student: Student = { ...rowToStudent(newS), transcriptId: newT.id };
