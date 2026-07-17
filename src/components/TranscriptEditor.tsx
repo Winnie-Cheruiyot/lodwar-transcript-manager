@@ -28,6 +28,8 @@ import {
 } from "@/components/ui/select";
 import { Calendar, Edit, Plus } from "lucide-react";
 import { toast } from "sonner";
+import { courses, getHodForCourse } from "@/lib/courses";
+
 
 // Define default course units available for selection
 const availableCourseUnits = [
