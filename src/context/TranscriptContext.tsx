@@ -242,7 +242,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
             const feeBalance = row.feeBalance || row['Fee Balance'] || "";
             const managerComments = row.managerComments || row['Manager Comments'] || "";
             const hodComments = row.hodComments || row['HOD Comments'] || "";
-            const hodName = row.hodName || row['HOD Name'] || "";
+            const hodName = row.hodName || row['HOD Name'] || getHodForCourse(course);
 
             // Find existing
             const existing = students.find(s => s.admissionNumber === admissionNumber && s.schoolYear === schoolYear);
