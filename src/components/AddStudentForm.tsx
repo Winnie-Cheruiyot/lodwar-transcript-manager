@@ -69,8 +69,18 @@ const AddStudentForm: React.FC<AddStudentFormProps> = ({ onSuccess, onCancel }) 
           </div>
           <div className="space-y-2">
             <Label htmlFor="course">Course</Label>
-            <Input id="course" name="course" value={formData.course} onChange={handleChange} required />
+            <Select value={formData.course} onValueChange={(v) => setFormData(prev => ({ ...prev, course: v }))}>
+              <SelectTrigger id="course">
+                <SelectValue placeholder="Select course" />
+              </SelectTrigger>
+              <SelectContent>
+                {courses.map(c => (
+                  <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
+
           <div className="space-y-2">
             <Label>Term</Label>
             <div className="flex gap-3">
