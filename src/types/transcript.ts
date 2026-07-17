@@ -35,36 +35,22 @@ export interface GradeScale {
 }
 
 export const gradeScales: GradeScale[] = [
-  { grade: 'A', range: '70-100' },
-  { grade: 'B', range: '60-69' },
-  { grade: 'C', range: '50-59' },
-  { grade: 'D', range: '40-49' },
-  { grade: 'E', range: '0-39' },
+  { grade: 'PASS', range: '100-200' },
+  { grade: 'FAIL', range: '0-99' },
 ];
 
 export const passScales = [
-  { level: 'DISTINCTION', range: '561-800' },
-  { level: 'CREDIT', range: '401-560' },
-  { level: 'PASS', range: '240-400' },
-  { level: 'FAIL', range: '0-239' },
+  { level: 'PASS', range: '100-200' },
+  { level: 'FAIL', range: '0-99' },
 ];
 
 export const defaultCourseUnits: CourseUnit[] = [
   { id: '1', name: 'TRADE THEORY', exam: null, grade: null },
   { id: '2', name: 'TRADE PRACTICE', exam: null, grade: null },
-  { id: '3', name: 'COMMUNICATION SKILLS', exam: null, grade: null },
-  { id: '4', name: 'ENTREPRENEURSHIP', exam: null, grade: null },
-  { id: '5', name: 'MATHEMATICS', exam: null, grade: null },
-  { id: '6', name: 'GENERAL SCIENCE', exam: null, grade: null },
-  { id: '7', name: 'DIGITAL LITERACY', exam: null, grade: null },
-  { id: '8', name: 'LIFE SKILLS', exam: null, grade: null },
 ];
 
 export const calculateGrade = (exam: number | null): string | null => {
   if (exam === null) return null;
-  if (exam >= 70) return "A";
-  if (exam >= 60) return "B";
-  if (exam >= 50) return "C";
-  if (exam >= 40) return "D";
-  return "E";
+  return exam >= 50 ? "PASS" : "FAIL";
 };
+
