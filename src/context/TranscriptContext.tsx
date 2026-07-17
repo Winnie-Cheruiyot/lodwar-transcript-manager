@@ -3,6 +3,8 @@ import { Transcript, Student, CourseUnit, defaultCourseUnits, calculateGrade } f
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
+import { getHodForCourse } from "@/lib/courses";
+
 
 interface TranscriptContextType {
   transcripts: Transcript[];
@@ -146,7 +148,9 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
     const { data: newT, error: tErr } = await supabase.from("transcripts").insert({
       student_id: newS.id,
       course_units: defaultCourseUnits as any,
+      hod_name: getHodForCourse(studentData.course),
     }).select().single();
+
     if (tErr || !newT) { toast.error("Failed to create transcript"); throw tErr; }
 
     const student: Student = { ...rowToStudent(newS), transcriptId: newT.id };
@@ -238,7 +242,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
             const feeBalance = row.feeBalance || row['Fee Balance'] || "";
             const managerComments = row.managerComments || row['Manager Comments'] || "";
             const hodComments = row.hodComments || row['HOD Comments'] || "";
-            const hodName = row.hodName || row['HOD Name'] || "";
+            const hodName = row.hodName || row['HOD Name'] || getHodForCourse(course);
 
             // Find existing
             const existing = students.find(s => s.admissionNumber === admissionNumber && s.schoolYear === schoolYear);
