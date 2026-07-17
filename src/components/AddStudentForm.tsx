@@ -18,6 +18,9 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { courses } from "@/lib/courses";
+
+
 
 interface AddStudentFormProps {
   onSuccess: () => void;
