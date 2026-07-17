@@ -218,13 +218,28 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="course">Course</Label>
-                  <Input
-                    id="course"
+                  <Select
                     value={editedTranscript.student.course}
-                    onChange={(e) => handleStudentChange("course", e.target.value)}
-                    required
-                  />
+                    onValueChange={(v) => {
+                      const hod = getHodForCourse(v);
+                      setEditedTranscript((prev) => ({
+                        ...prev,
+                        student: { ...prev.student, course: v },
+                        hodName: hod || prev.hodName,
+                      }));
+                    }}
+                  >
+                    <SelectTrigger id="course">
+                      <SelectValue placeholder="Select course" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {courses.map((c) => (
+                        <SelectItem key={c.name} value={c.name}>{c.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="schoolYear" className="flex items-center gap-2">
                     <Calendar className="w-4 h-4" /> Term & Year
