@@ -41,9 +41,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
   
   const getManagerComments = (level) => {
     switch(level) {
-      case "DISTINCTION": return "Outstanding performance. Keep up the excellent work!";
-      case "CREDIT": return "Commendable performance. Continue with the good effort.";
-      case "PASS": return "You have passed. Work harder to improve your grades.";
+      case "PASS": return "Congratulations on passing. Keep working hard to improve further.";
       case "FAIL": return "You need to put in more effort and seek additional support.";
       default: return "Please complete all assessments for proper evaluation.";
     }
@@ -51,13 +49,12 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
 
   const getHodComments = (level) => {
     switch(level) {
-      case "DISTINCTION": return "Exceptional results. Student shows great potential in this field.";
-      case "CREDIT": return "Good results. Student demonstrates solid understanding of the subject.";
-      case "PASS": return "Acceptable results. Student should focus on improving weak areas.";
+      case "PASS": return "Satisfactory performance. Continue building on your strengths.";
       case "FAIL": return "Student requires remedial work and closer supervision.";
       default: return "Incomplete assessment. Unable to provide comprehensive feedback.";
     }
   };
+
 
   const managerComments = transcript.managerComments || getManagerComments(passLevel);
   const hodComments = transcript.hodComments || getHodComments(passLevel);
