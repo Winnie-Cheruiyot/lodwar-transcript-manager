@@ -147,9 +147,9 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         </div>
 
         {/* Final Grade and Pass Scales */}
-        <div className="flex justify-between items-start bg-gray-100 p-3 rounded mb-3 gap-4">
-          <div className="font-bold text-lvtc-navy flex items-center gap-2 text-sm">
-            FINAL GRADE: <span className="text-black text-lg">{passLevel}</span>
+        <div className="final-grade-box flex justify-between items-center bg-gray-100 p-3 rounded mb-3 gap-4 border-2 border-lvtc-navy">
+          <div className="font-bold text-lvtc-navy flex items-center gap-2 text-base">
+            FINAL GRADE: <span className={`text-xl ${stats.total >= 100 ? "text-green-700" : "text-red-700"}`}>{passLevel}</span>
           </div>
           <div className="flex flex-col gap-1">
             <div className="text-sm font-semibold text-lvtc-navy mb-1">Pass Scales:</div>
