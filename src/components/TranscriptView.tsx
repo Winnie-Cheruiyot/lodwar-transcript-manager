@@ -136,10 +136,10 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
                   <td className="p-2 text-center">{unit.grade || "-"}</td>
                 </tr>
               ))}
-              <tr className="bg-lvtc-yellow font-bold">
+              <tr className="bg-lvtc-yellow font-bold border-t-2 border-lvtc-navy total-row">
                 <td className="p-2">TOTAL MARKS</td>
                 <td className="p-2 text-center">{stats.total} / 200</td>
-                <td className="p-2 text-center">{stats.total >= 100 ? "PASS" : "FAIL"}</td>
+                <td className={`p-2 text-center text-base ${stats.total >= 100 ? "text-green-700" : "text-red-700"}`}>{stats.total >= 100 ? "PASS" : "FAIL"}</td>
               </tr>
 
             </tbody>
