@@ -35,8 +35,11 @@ export interface GradeScale {
 }
 
 export const gradeScales: GradeScale[] = [
-  { grade: 'PASS', range: '100-200' },
-  { grade: 'FAIL', range: '0-99' },
+  { grade: 'A', range: '80-100' },
+  { grade: 'B', range: '60-79' },
+  { grade: 'C', range: '50-59' },
+  { grade: 'D', range: '40-49' },
+  { grade: 'E', range: '0-39' },
 ];
 
 export const passScales = [
@@ -49,8 +52,15 @@ export const defaultCourseUnits: CourseUnit[] = [
   { id: '2', name: 'TRADE PRACTICE', exam: null, grade: null },
 ];
 
+export const DEFAULT_CLOSING_DAY = "23rd July 2026";
+export const DEFAULT_OPENING_DAY = "8th September 2026";
+
 export const calculateGrade = (exam: number | null): string | null => {
   if (exam === null) return null;
-  return exam >= 50 ? "PASS" : "FAIL";
+  if (exam >= 80) return "A";
+  if (exam >= 60) return "B";
+  if (exam >= 50) return "C";
+  if (exam >= 40) return "D";
+  return "E";
 };
 

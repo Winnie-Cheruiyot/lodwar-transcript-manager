@@ -53,8 +53,8 @@ const rowToTranscript = (row: any, student: Student): Transcript => ({
   managerComments: row.manager_comments ?? "",
   hodComments: row.hod_comments ?? "",
   hodName: row.hod_name ?? "",
-  closingDay: row.closing_day ?? "",
-  openingDay: row.opening_day ?? "",
+  closingDay: row.closing_day || "23rd July 2026",
+  openingDay: row.opening_day || "8th September 2026",
   feeBalance: row.fee_balance ?? "",
 });
 
@@ -149,6 +149,8 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
       student_id: newS.id,
       course_units: defaultCourseUnits as any,
       hod_name: getHodForCourse(studentData.course),
+      closing_day: "23rd July 2026",
+      opening_day: "8th September 2026",
     }).select().single();
 
     if (tErr || !newT) { toast.error("Failed to create transcript"); throw tErr; }
