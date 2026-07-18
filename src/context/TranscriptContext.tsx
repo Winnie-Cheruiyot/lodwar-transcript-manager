@@ -149,6 +149,8 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
       student_id: newS.id,
       course_units: defaultCourseUnits as any,
       hod_name: getHodForCourse(studentData.course),
+      closing_day: "23rd July 2026",
+      opening_day: "8th September 2026",
     }).select().single();
 
     if (tErr || !newT) { toast.error("Failed to create transcript"); throw tErr; }
