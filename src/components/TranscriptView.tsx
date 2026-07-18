@@ -136,10 +136,10 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
                   <td className="p-2 text-center">{unit.grade || "-"}</td>
                 </tr>
               ))}
-              <tr className="bg-lvtc-yellow font-bold">
+              <tr className="bg-lvtc-yellow font-bold border-t-2 border-lvtc-navy total-row">
                 <td className="p-2">TOTAL MARKS</td>
                 <td className="p-2 text-center">{stats.total} / 200</td>
-                <td className="p-2 text-center">{stats.total >= 100 ? "PASS" : "FAIL"}</td>
+                <td className={`p-2 text-center text-base ${stats.total >= 100 ? "text-green-700" : "text-red-700"}`}>{stats.total >= 100 ? "PASS" : "FAIL"}</td>
               </tr>
 
             </tbody>
@@ -147,9 +147,9 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         </div>
 
         {/* Final Grade and Pass Scales */}
-        <div className="flex justify-between items-start bg-gray-100 p-3 rounded mb-3 gap-4">
-          <div className="font-bold text-lvtc-navy flex items-center gap-2 text-sm">
-            FINAL GRADE: <span className="text-black text-lg">{passLevel}</span>
+        <div className="final-grade-box flex justify-between items-center bg-gray-100 p-3 rounded mb-3 gap-4 border-2 border-lvtc-navy">
+          <div className="font-bold text-lvtc-navy flex items-center gap-2 text-base">
+            FINAL GRADE: <span className={`text-xl ${stats.total >= 100 ? "text-green-700" : "text-red-700"}`}>{passLevel}</span>
           </div>
           <div className="flex flex-col gap-1">
             <div className="text-sm font-semibold text-lvtc-navy mb-1">Pass Scales:</div>
@@ -224,18 +224,23 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
       <style>
         {`
           @media print {
-            @page { size: A4 portrait; margin: 8mm; }
+            @page { size: A4 portrait; margin: 7mm; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-            body { margin: 0; padding: 0; font-size: 12px; }
-            .print-container { width: 100%; page-break-after: always; }
+            html, body { margin: 0; padding: 0; font-size: 11px; }
             .bg-lvtc-navy { background-color: #1a2332 !important; color: white !important; }
             .bg-lvtc-yellow, .bg-lvtc-yellow\\/50, .bg-lvtc-yellow\\/60 { background-color: #f5e6b8 !important; }
             .text-lvtc-navy { color: #1a2332 !important; }
-            table { border-collapse: collapse; }
-            th, td { padding: 6px 8px !important; }
+            .text-green-700 { color: #15803d !important; }
+            .text-red-700 { color: #b91c1c !important; }
+            table { border-collapse: collapse; page-break-inside: avoid; break-inside: avoid; }
+            thead { display: table-header-group; }
+            tr, .total-row, .final-grade-box { page-break-inside: avoid; break-inside: avoid; }
+            .total-row td { padding: 6px 8px !important; border-top: 2px solid #1a2332 !important; }
+            th, td { padding: 5px 8px !important; }
             .rounded-3xl { border-radius: 0 !important; }
             .shadow-lg { box-shadow: none !important; }
-            img { max-width: 70px !important; max-height: 70px !important; }
+            img { max-width: 65px !important; max-height: 65px !important; }
+            .min-h-\\[85px\\] { min-height: 60px !important; }
           }
         `}
       </style>
