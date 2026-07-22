@@ -274,9 +274,12 @@ const Students = () => {
                         </tr>
                       `).join('')}
                       <tr class="bg-lvtc-yellow font-bold">
-                        <td class="p-1.5">Total</td>
-                        <td class="p-1.5 text-center">${transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0)}</td>
-                        <td class="p-1.5 text-center">-</td>
+                        <td class="p-1.5">TOTAL MARKS</td>
+                        <td class="p-1.5 text-center">${transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0)} / ${getCourseMaxMarks(transcript.student.course)}</td>
+                        <td class="p-1.5 text-center">${(() => {
+                          const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
+                          return total >= getCoursePassThreshold(transcript.student.course) ? 'PASS' : 'FAIL';
+                        })()}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -285,27 +288,12 @@ const Students = () => {
                   <div class="font-bold text-lvtc-navy">FINAL GRADE: ${
                    (() => {
                       const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
-                       for (const scale of [
-                        { level: "DISTINCTION", range: "561-800" },
-                        { level: "CREDIT", range: "401-560" },
-                        { level: "PASS", range: "240-400" },
-                        { level: "FAIL", range: "0-239" }
-                      ]) {
-                        const [min, max] = scale.range.split('-').map(Number);
-                        if (total >= min && total <= max) {
-                          return scale.level;
-                        }
-                      }
-                      return "NOT GRADED";
+                      const passThreshold = getCoursePassThreshold(transcript.student.course);
+                      return total >= passThreshold ? 'PASS' : 'FAIL';
                     })()
                   }</div>
                   <div class="flex-1 ml-4 flex space-x-4">
-                    ${[
-                      { level: "DISTINCTION", range: "561-800" },
-                      { level: "CREDIT", range: "401-560" },
-                      { level: "PASS", range: "240-400" },
-                      { level: "FAIL", range: "0-239" }
-                    ].map(scale => `
+                    ${getPassScalesForCourse(transcript.student.course).map(scale => `
                       <div class="flex items-center gap-1 text-sm">
                         <span class="font-bold">${scale.level}:</span>
                         <span>${scale.range}</span>
