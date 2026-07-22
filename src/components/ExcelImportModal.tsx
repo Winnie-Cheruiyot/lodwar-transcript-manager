@@ -10,7 +10,6 @@ import { useTranscript } from "@/context/TranscriptContext";
 import { toast } from "sonner";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { Download } from "lucide-react";
-import { defaultCourseUnits } from "@/types/transcript";
 import { downloadTranscriptTemplate } from "@/lib/excelTemplate";
 
 interface ExcelImportModalProps {

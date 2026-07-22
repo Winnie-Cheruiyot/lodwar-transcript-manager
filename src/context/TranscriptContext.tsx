@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { Transcript, Student, CourseUnit, defaultCourseUnits, calculateGrade } from "@/types/transcript";
+import { Transcript, Student, CourseUnit, calculateGrade } from "@/types/transcript";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
-import { getHodForCourse } from "@/lib/courses";
+import { getHodForCourse, getCourseDefaultUnits } from "@/lib/courses";
 
 
 interface TranscriptContextType {
@@ -48,7 +48,7 @@ const rowToTranscript = (row: any, student: Student): Transcript => ({
   student,
   courseUnits: Array.isArray(row.course_units) && row.course_units.length > 0
     ? row.course_units
-    : [...defaultCourseUnits],
+    : getCourseDefaultUnits(student.course),
   remarks: row.remarks ?? "",
   managerComments: row.manager_comments ?? "",
   hodComments: row.hod_comments ?? "",
@@ -110,7 +110,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
         const t = trArr.find(t => t.id === s.transcriptId);
         await supabase.from("transcripts").insert({
           student_id: newS.id,
-          course_units: (t?.courseUnits ?? defaultCourseUnits) as any,
+          course_units: (t?.courseUnits ?? getCourseDefaultUnits(s.course)) as any,
           remarks: t?.remarks ?? "",
           manager_comments: t?.managerComments ?? "",
           hod_comments: t?.hodComments ?? "",
@@ -147,7 +147,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
 
     const { data: newT, error: tErr } = await supabase.from("transcripts").insert({
       student_id: newS.id,
-      course_units: defaultCourseUnits as any,
+      course_units: getCourseDefaultUnits(studentData.course) as any,
       hod_name: getHodForCourse(studentData.course),
       closing_day: "23rd July 2026",
       opening_day: "8th September 2026",
@@ -255,7 +255,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
               studentId = existing.id;
               transcriptId = existing.transcriptId;
               const t = transcripts.find(t => t.id === transcriptId);
-              currentUnits = t ? [...t.courseUnits] : [...defaultCourseUnits];
+              currentUnits = t ? [...t.courseUnits] : getCourseDefaultUnits(course);
               await supabase.from("students").update({ name, course, school_year: schoolYear }).eq("id", studentId);
               updated++;
             } else {
@@ -264,7 +264,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
               }).select().single();
               if (!newS) continue;
               studentId = newS.id;
-              currentUnits = [...defaultCourseUnits];
+              currentUnits = getCourseDefaultUnits(course);
               const { data: newT } = await supabase.from("transcripts").insert({
                 student_id: studentId, course_units: currentUnits as any
               }).select().single();

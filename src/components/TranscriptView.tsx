@@ -1,5 +1,6 @@
 import React from "react";
-import { Transcript, gradeScales, passScales } from "@/types/transcript";
+import { Transcript, gradeScales } from "@/types/transcript";
+import { getCourseMaxMarks, getCoursePassThreshold, getPassScalesForCourse } from "@/lib/courses";
 import logo from "/public/lovable-uploads/2a540926-4284-411c-aa4b-7863224682f2.png";
 
 interface TranscriptViewProps {
@@ -26,14 +27,13 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
   };
 
   const stats = calculateTotal();
+  const maxMarks = getCourseMaxMarks(transcript.student.course);
+  const passThreshold = getCoursePassThreshold(transcript.student.course);
+  const passScales = getPassScalesForCourse(transcript.student.course);
   
   const getPassLevel = (totalMarks) => {
-    for (const scale of passScales) {
-      const [min, max] = scale.range.split('-').map(Number);
-      if (totalMarks >= min && totalMarks <= max) {
-        return scale.level;
-      }
-    }
+    if (totalMarks >= passThreshold) return "PASS";
+    if (totalMarks >= 0 && totalMarks < passThreshold) return "FAIL";
     return "NOT GRADED";
   };
 
@@ -138,8 +138,8 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
               ))}
               <tr className="bg-lvtc-yellow font-bold border-t-2 border-lvtc-navy total-row">
                 <td className="p-2">TOTAL MARKS</td>
-                <td className="p-2 text-center">{stats.total} / 200</td>
-                <td className={`p-2 text-center text-base ${stats.total >= 100 ? "text-green-700" : "text-red-700"}`}>{stats.total >= 100 ? "PASS" : "FAIL"}</td>
+                <td className="p-2 text-center">{stats.total} / {maxMarks}</td>
+                <td className={`p-2 text-center text-base ${stats.total >= passThreshold ? "text-green-700" : "text-red-700"}`}>{stats.total >= passThreshold ? "PASS" : "FAIL"}</td>
               </tr>
 
             </tbody>
@@ -149,7 +149,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
         {/* Final Grade and Pass Scales */}
         <div className="final-grade-box flex justify-between items-center bg-gray-100 p-3 rounded mb-3 gap-4 border-2 border-lvtc-navy">
           <div className="font-bold text-lvtc-navy flex items-center gap-2 text-base">
-            FINAL GRADE: <span className={`text-xl ${stats.total >= 100 ? "text-green-700" : "text-red-700"}`}>{passLevel}</span>
+            FINAL GRADE: <span className={`text-xl ${stats.total >= passThreshold ? "text-green-700" : "text-red-700"}`}>{passLevel}</span>
           </div>
           <div className="flex flex-col gap-1">
             <div className="text-sm font-semibold text-lvtc-navy mb-1">Pass Scales:</div>

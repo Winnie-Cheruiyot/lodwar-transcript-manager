@@ -25,6 +25,8 @@ import { toast } from "sonner";
 import { Printer, Download, FileDown, Loader2, FileArchive } from "lucide-react";
 import { downloadTranscriptTemplate } from "@/lib/excelTemplate";
 import { downloadTranscriptsCombinedPdf, downloadTranscriptsIndividualPdfs, downloadTranscriptsZip } from "@/lib/transcriptPdf";
+import { getCourseMaxMarks, getCoursePassThreshold, getPassScalesForCourse, getHodForCourse } from "@/lib/courses";
+import { gradeScales } from "@/types/transcript";
 
 const Students = () => {
   const { students, deleteStudent, transcripts } = useTranscript();
@@ -273,9 +275,12 @@ const Students = () => {
                         </tr>
                       `).join('')}
                       <tr class="bg-lvtc-yellow font-bold">
-                        <td class="p-1.5">Total</td>
-                        <td class="p-1.5 text-center">${transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0)}</td>
-                        <td class="p-1.5 text-center">-</td>
+                        <td class="p-1.5">TOTAL MARKS</td>
+                        <td class="p-1.5 text-center">${transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0)} / ${getCourseMaxMarks(transcript.student.course)}</td>
+                        <td class="p-1.5 text-center">${(() => {
+                          const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
+                          return total >= getCoursePassThreshold(transcript.student.course) ? 'PASS' : 'FAIL';
+                        })()}</td>
                       </tr>
                     </tbody>
                   </table>
@@ -284,27 +289,12 @@ const Students = () => {
                   <div class="font-bold text-lvtc-navy">FINAL GRADE: ${
                    (() => {
                       const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
-                       for (const scale of [
-                        { level: "DISTINCTION", range: "561-800" },
-                        { level: "CREDIT", range: "401-560" },
-                        { level: "PASS", range: "240-400" },
-                        { level: "FAIL", range: "0-239" }
-                      ]) {
-                        const [min, max] = scale.range.split('-').map(Number);
-                        if (total >= min && total <= max) {
-                          return scale.level;
-                        }
-                      }
-                      return "NOT GRADED";
+                      const passThreshold = getCoursePassThreshold(transcript.student.course);
+                      return total >= passThreshold ? 'PASS' : 'FAIL';
                     })()
                   }</div>
                   <div class="flex-1 ml-4 flex space-x-4">
-                    ${[
-                      { level: "DISTINCTION", range: "561-800" },
-                      { level: "CREDIT", range: "401-560" },
-                      { level: "PASS", range: "240-400" },
-                      { level: "FAIL", range: "0-239" }
-                    ].map(scale => `
+                    ${getPassScalesForCourse(transcript.student.course).map(scale => `
                       <div class="flex items-center gap-1 text-sm">
                         <span class="font-bold">${scale.level}:</span>
                         <span>${scale.range}</span>
@@ -337,13 +327,7 @@ const Students = () => {
                       </div>
                     </div>
                     <div class="grid grid-cols-2 gap-1 mt-3 text-[10px] border-t pt-1 border-gray-400">
-                      ${[
-                        { grade: "A", range: "70-100" },
-                        { grade: "B", range: "60-69" },
-                        { grade: "C", range: "50-59" },
-                        { grade: "D", range: "40-49" },
-                        { grade: "E", range: "0-39" }
-                      ].map(scale => `
+                      ${gradeScales.map(scale => `
                         <div class="flex gap-1">
                           <span class="font-bold">${scale.grade}:</span>
                           <span>${scale.range}</span>
@@ -355,8 +339,8 @@ const Students = () => {
                     <div class="uppercase font-bold mb-2 text-center">H.O.D Comments:</div>
                     <div class="min-h-[80px]">${transcript.hodComments}</div>
                     <div class="mt-3 font-bold text-center">
-                      ${transcript.hodName || "MR. GEOFREY NALIMA"}<br />
-                      H.O.D ELECTRICAL
+                      ${transcript.hodName || getHodForCourse(transcript.student.course)}<br />
+                      H.O.D
                     </div>
                   </div>
                 </div>

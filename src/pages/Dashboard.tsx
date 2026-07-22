@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Download } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
+import { getCoursePassThreshold } from "@/lib/courses";
 
 const Dashboard = () => {
   const { students, transcripts } = useTranscript();
@@ -43,9 +44,10 @@ const Dashboard = () => {
       }
       
       const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
+      const passThreshold = getCoursePassThreshold(transcript.student.course);
       termData[term].totalMarks += total;
       termData[term].count += 1;
-      if (total >= 200) termData[term].passing += 1;
+      if (total >= passThreshold) termData[term].passing += 1;
     });
     
     return Object.keys(termData)
@@ -76,9 +78,10 @@ const Dashboard = () => {
     
     filteredTranscripts.forEach(transcript => {
       const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
+      const passThreshold = getCoursePassThreshold(transcript.student.course);
       totalMarks += total;
       
-      if (total >= 200) passingStudents++;
+      if (total >= passThreshold) passingStudents++;
     });
     
     return {
@@ -194,16 +197,15 @@ const Dashboard = () => {
     }));
   }, [filteredTranscripts]);
 
-  // Performance levels distribution
+  // Performance levels distribution (PASS/FAIL based on course-specific threshold)
   const performanceLevels = useMemo(() => {
-    const levels = { DISTINCTION: 0, CREDIT: 0, PASS: 0, FAIL: 0 };
+    const levels = { PASS: 0, FAIL: 0 };
     
     filteredTranscripts.forEach(transcript => {
       const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
+      const passThreshold = getCoursePassThreshold(transcript.student.course);
       
-      if (total >= 451) levels.DISTINCTION++;
-      else if (total >= 301) levels.CREDIT++;
-      else if (total >= 200) levels.PASS++;
+      if (total >= passThreshold) levels.PASS++;
       else levels.FAIL++;
     });
     
@@ -296,7 +298,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{schoolStats.passRate}%</div>
-            <p className="text-sm text-gray-500">Students scoring 200+ points</p>
+            <p className="text-sm text-gray-500">Students meeting course pass mark</p>
           </CardContent>
         </Card>
         <Card>
