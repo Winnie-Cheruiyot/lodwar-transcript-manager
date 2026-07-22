@@ -380,15 +380,18 @@ const TranscriptEditor: React.FC<TranscriptEditorProps> = ({
                 </table>
               </div>
               
-              <div className="mt-4 p-2 bg-gray-50 rounded">
+              <div className="mt-4 p-2 bg-gray-50 rounded space-y-2">
                 <p className="text-sm font-semibold mb-1">Grading System (based on Exam out of 100):</p>
                 <div className="grid grid-cols-2 md:grid-cols-5 gap-2 text-xs">
-                  <div>A: 70-100</div>
-                  <div>B: 60-69</div>
-                  <div>C: 50-59</div>
-                  <div>D: 40-49</div>
-                  <div>E: 0-39</div>
+                  {gradeScales.map(scale => (
+                    <div key={scale.grade}><span className="font-bold">{scale.grade}:</span> {scale.range}</div>
+                  ))}
                 </div>
+                <p className="text-xs text-muted-foreground">
+                  Total marks out of <strong>{getCourseMaxMarks(editedTranscript.student.course)}</strong>. 
+                  Pass mark: <strong>{getCoursePassThreshold(editedTranscript.student.course)}</strong> 
+                  ({getPassScalesForCourse(editedTranscript.student.course).map(s => `${s.level}: ${s.range}`).join(", ")})
+                </p>
               </div>
             </CardContent>
           </Card>
