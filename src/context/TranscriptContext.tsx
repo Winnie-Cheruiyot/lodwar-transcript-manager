@@ -48,7 +48,7 @@ const rowToTranscript = (row: any, student: Student): Transcript => ({
   student,
   courseUnits: Array.isArray(row.course_units) && row.course_units.length > 0
     ? row.course_units
-    : [...defaultCourseUnits],
+    : getCourseDefaultUnits(student.course),
   remarks: row.remarks ?? "",
   managerComments: row.manager_comments ?? "",
   hodComments: row.hod_comments ?? "",
