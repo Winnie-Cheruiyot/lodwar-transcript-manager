@@ -44,9 +44,10 @@ const Dashboard = () => {
       }
       
       const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
+      const passThreshold = getCoursePassThreshold(transcript.student.course);
       termData[term].totalMarks += total;
       termData[term].count += 1;
-      if (total >= 200) termData[term].passing += 1;
+      if (total >= passThreshold) termData[term].passing += 1;
     });
     
     return Object.keys(termData)
