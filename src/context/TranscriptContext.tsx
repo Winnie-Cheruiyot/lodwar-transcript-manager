@@ -1,9 +1,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { Transcript, Student, CourseUnit, defaultCourseUnits, calculateGrade } from "@/types/transcript";
+import { Transcript, Student, CourseUnit, calculateGrade } from "@/types/transcript";
 import { toast } from "sonner";
 import * as XLSX from "xlsx";
 import { supabase } from "@/integrations/supabase/client";
-import { getHodForCourse } from "@/lib/courses";
+import { getHodForCourse, getCourseDefaultUnits } from "@/lib/courses";
 
 
 interface TranscriptContextType {
