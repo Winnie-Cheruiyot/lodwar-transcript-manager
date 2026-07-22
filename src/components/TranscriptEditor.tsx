@@ -1,7 +1,7 @@
 
 import React, { useState, useEffect } from "react";
 import { useTranscript } from "@/context/TranscriptContext";
-import { Transcript, CourseUnit, calculateGrade } from "@/types/transcript";
+import { Transcript, CourseUnit, calculateGrade, gradeScales } from "@/types/transcript";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -28,7 +28,7 @@ import {
 } from "@/components/ui/select";
 import { Calendar, Edit, Plus } from "lucide-react";
 import { toast } from "sonner";
-import { courses, getHodForCourse } from "@/lib/courses";
+import { courses, getHodForCourse, getCourseMaxMarks, getCoursePassThreshold, getPassScalesForCourse } from "@/lib/courses";
 
 
 // Define default course units available for selection
