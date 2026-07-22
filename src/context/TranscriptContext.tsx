@@ -255,7 +255,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
               studentId = existing.id;
               transcriptId = existing.transcriptId;
               const t = transcripts.find(t => t.id === transcriptId);
-              currentUnits = t ? [...t.courseUnits] : [...defaultCourseUnits];
+              currentUnits = t ? [...t.courseUnits] : getCourseDefaultUnits(course);
               await supabase.from("students").update({ name, course, school_year: schoolYear }).eq("id", studentId);
               updated++;
             } else {
@@ -264,7 +264,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
               }).select().single();
               if (!newS) continue;
               studentId = newS.id;
-              currentUnits = [...defaultCourseUnits];
+              currentUnits = getCourseDefaultUnits(course);
               const { data: newT } = await supabase.from("transcripts").insert({
                 student_id: studentId, course_units: currentUnits as any
               }).select().single();
