@@ -32,12 +32,8 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
   const passScales = getPassScalesForCourse(transcript.student.course);
   
   const getPassLevel = (totalMarks) => {
-    for (const scale of passScales) {
-      const [min, max] = scale.range.split('-').map(Number);
-      if (totalMarks >= min && totalMarks <= max) {
-        return scale.level;
-      }
-    }
+    if (totalMarks >= passThreshold) return "PASS";
+    if (totalMarks >= 0 && totalMarks < passThreshold) return "FAIL";
     return "NOT GRADED";
   };
 
