@@ -10,6 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Download } from "lucide-react";
 import * as XLSX from "xlsx";
 import { toast } from "sonner";
+import { getCoursePassThreshold } from "@/lib/courses";
 
 const Dashboard = () => {
   const { students, transcripts } = useTranscript();
