@@ -197,16 +197,15 @@ const Dashboard = () => {
     }));
   }, [filteredTranscripts]);
 
-  // Performance levels distribution
+  // Performance levels distribution (PASS/FAIL based on course-specific threshold)
   const performanceLevels = useMemo(() => {
-    const levels = { DISTINCTION: 0, CREDIT: 0, PASS: 0, FAIL: 0 };
+    const levels = { PASS: 0, FAIL: 0 };
     
     filteredTranscripts.forEach(transcript => {
       const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
+      const passThreshold = getCoursePassThreshold(transcript.student.course);
       
-      if (total >= 451) levels.DISTINCTION++;
-      else if (total >= 301) levels.CREDIT++;
-      else if (total >= 200) levels.PASS++;
+      if (total >= passThreshold) levels.PASS++;
       else levels.FAIL++;
     });
     
