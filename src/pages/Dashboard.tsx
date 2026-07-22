@@ -298,7 +298,7 @@ const Dashboard = () => {
           </CardHeader>
           <CardContent>
             <div className="text-3xl font-bold">{schoolStats.passRate}%</div>
-            <p className="text-sm text-gray-500">Students scoring 200+ points</p>
+            <p className="text-sm text-gray-500">Students meeting course pass mark</p>
           </CardContent>
         </Card>
         <Card>
