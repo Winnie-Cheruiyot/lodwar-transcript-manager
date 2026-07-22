@@ -147,7 +147,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
 
     const { data: newT, error: tErr } = await supabase.from("transcripts").insert({
       student_id: newS.id,
-      course_units: defaultCourseUnits as any,
+      course_units: getCourseDefaultUnits(studentData.course) as any,
       hod_name: getHodForCourse(studentData.course),
       closing_day: "23rd July 2026",
       opening_day: "8th September 2026",
