@@ -1,5 +1,6 @@
 import React from "react";
-import { Transcript, gradeScales, passScales } from "@/types/transcript";
+import { Transcript, gradeScales } from "@/types/transcript";
+import { getCourseMaxMarks, getCoursePassThreshold, getPassScalesForCourse } from "@/lib/courses";
 import logo from "/public/lovable-uploads/2a540926-4284-411c-aa4b-7863224682f2.png";
 
 interface TranscriptViewProps {
