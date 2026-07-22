@@ -224,26 +224,32 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
       <style>
         {`
           @media print {
-            @page { size: A4 portrait; margin: 7mm; }
+            @page { size: A4 portrait; margin: 8mm; }
             * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color-adjust: exact !important; }
-            html, body { margin: 0; padding: 0; font-size: 11px; }
+            html, body { margin: 0 !important; padding: 0 !important; font-size: 13px; width: 100%; }
+            .container { max-width: 100% !important; width: 100% !important; padding: 0 !important; margin: 0 !important; }
+            .print-container, .print-container > * { width: 100% !important; max-width: 100% !important; margin: 0 !important; }
             .bg-lvtc-navy { background-color: #1a2332 !important; color: white !important; }
             .bg-lvtc-yellow, .bg-lvtc-yellow\\/50, .bg-lvtc-yellow\\/60 { background-color: #f5e6b8 !important; }
             .text-lvtc-navy { color: #1a2332 !important; }
             .text-green-700 { color: #15803d !important; }
             .text-red-700 { color: #b91c1c !important; }
-            table { border-collapse: collapse; page-break-inside: avoid; break-inside: avoid; }
+            table { border-collapse: collapse; width: 100% !important; page-break-inside: avoid; break-inside: avoid; }
             thead { display: table-header-group; }
             tr, .total-row, .final-grade-box { page-break-inside: avoid; break-inside: avoid; }
-            .total-row td { padding: 6px 8px !important; border-top: 2px solid #1a2332 !important; }
-            th, td { padding: 5px 8px !important; }
+            .total-row td { padding: 8px 10px !important; border-top: 2px solid #1a2332 !important; font-size: 14px !important; }
+            th, td { padding: 7px 10px !important; font-size: 13px !important; }
+            th { font-size: 13px !important; }
             .rounded-3xl { border-radius: 0 !important; }
             .shadow-lg { box-shadow: none !important; }
-            img { max-width: 65px !important; max-height: 65px !important; }
-            .min-h-\\[85px\\] { min-height: 60px !important; }
+            img { max-width: 80px !important; max-height: 80px !important; }
+            h1 { font-size: 20px !important; }
+            h2 { font-size: 17px !important; }
+            .min-h-\\[85px\\] { min-height: 70px !important; }
           }
         `}
       </style>
+
     </div>
   );
 };
