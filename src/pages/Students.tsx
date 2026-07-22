@@ -25,6 +25,7 @@ import { toast } from "sonner";
 import { Printer, Download, FileDown, Loader2, FileArchive } from "lucide-react";
 import { downloadTranscriptTemplate } from "@/lib/excelTemplate";
 import { downloadTranscriptsCombinedPdf, downloadTranscriptsIndividualPdfs, downloadTranscriptsZip } from "@/lib/transcriptPdf";
+import { getCourseMaxMarks, getCoursePassThreshold, getPassScalesForCourse } from "@/lib/courses";
 
 const Students = () => {
   const { students, deleteStudent, transcripts } = useTranscript();
