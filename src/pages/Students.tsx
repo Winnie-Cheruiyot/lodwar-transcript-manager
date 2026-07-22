@@ -327,13 +327,7 @@ const Students = () => {
                       </div>
                     </div>
                     <div class="grid grid-cols-2 gap-1 mt-3 text-[10px] border-t pt-1 border-gray-400">
-                      ${[
-                        { grade: "A", range: "70-100" },
-                        { grade: "B", range: "60-69" },
-                        { grade: "C", range: "50-59" },
-                        { grade: "D", range: "40-49" },
-                        { grade: "E", range: "0-39" }
-                      ].map(scale => `
+                      ${gradeScales.map(scale => `
                         <div class="flex gap-1">
                           <span class="font-bold">${scale.grade}:</span>
                           <span>${scale.range}</span>
@@ -345,8 +339,8 @@ const Students = () => {
                     <div class="uppercase font-bold mb-2 text-center">H.O.D Comments:</div>
                     <div class="min-h-[80px]">${transcript.hodComments}</div>
                     <div class="mt-3 font-bold text-center">
-                      ${transcript.hodName || "MR. GEOFREY NALIMA"}<br />
-                      H.O.D ELECTRICAL
+                      ${transcript.hodName || getHodForCourse(transcript.student.course)}<br />
+                      H.O.D
                     </div>
                   </div>
                 </div>
