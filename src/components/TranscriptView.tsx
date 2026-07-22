@@ -27,6 +27,9 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
   };
 
   const stats = calculateTotal();
+  const maxMarks = getCourseMaxMarks(transcript.student.course);
+  const passThreshold = getCoursePassThreshold(transcript.student.course);
+  const passScales = getPassScalesForCourse(transcript.student.course);
   
   const getPassLevel = (totalMarks) => {
     for (const scale of passScales) {
