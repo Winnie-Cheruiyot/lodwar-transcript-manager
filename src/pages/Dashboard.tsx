@@ -78,9 +78,10 @@ const Dashboard = () => {
     
     filteredTranscripts.forEach(transcript => {
       const total = transcript.courseUnits.reduce((sum, unit) => sum + (unit.exam || 0), 0);
+      const passThreshold = getCoursePassThreshold(transcript.student.course);
       totalMarks += total;
       
-      if (total >= 200) passingStudents++;
+      if (total >= passThreshold) passingStudents++;
     });
     
     return {
