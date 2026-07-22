@@ -110,7 +110,7 @@ export const TranscriptProvider = ({ children }: TranscriptProviderProps) => {
         const t = trArr.find(t => t.id === s.transcriptId);
         await supabase.from("transcripts").insert({
           student_id: newS.id,
-          course_units: (t?.courseUnits ?? defaultCourseUnits) as any,
+          course_units: (t?.courseUnits ?? getCourseDefaultUnits(s.course)) as any,
           remarks: t?.remarks ?? "",
           manager_comments: t?.managerComments ?? "",
           hod_comments: t?.hodComments ?? "",
