@@ -100,15 +100,15 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
       <div className="p-5 bg-white">
         {/* Student Information */}
         <div className="flex flex-wrap mb-4 border-b pb-3 border-gray-300 text-sm">
-          <div className="w-1/2 flex items-center mb-2">
+          <div className="w-1/2 flex items-center mb-2 print-learner-primary">
             <span className="font-bold text-lvtc-navy mr-2">Name:</span>
             <span>{transcript.student.name}</span>
           </div>
-          <div className="w-1/2 flex items-center mb-2">
+          <div className="w-1/2 flex items-center mb-2 print-learner-primary">
             <span className="font-bold text-lvtc-navy mr-2">Adm No:</span>
             <span>{transcript.student.admissionNumber}</span>
           </div>
-          <div className="w-1/2 flex items-center">
+          <div className="w-1/2 flex items-center print-learner-primary">
             <span className="font-bold text-lvtc-navy mr-2">Course:</span>
             <span>{transcript.student.course}</span>
           </div>
@@ -246,6 +246,7 @@ const TranscriptView: React.FC<TranscriptViewProps> = ({ transcript, isPrinting 
             h1 { font-size: 20px !important; }
             h2 { font-size: 17px !important; }
             .min-h-\\[85px\\] { min-height: 70px !important; }
+            .print-learner-primary { font-size: 16px !important; }
           }
         `}
       </style>
